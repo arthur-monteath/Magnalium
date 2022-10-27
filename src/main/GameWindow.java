@@ -13,8 +13,8 @@ public class GameWindow {
 	{
 		frame = new JFrame();
 		
-		frame.setSize(500,500);
-		//frame.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+		//frame.setSize(500,500);
+		frame.setSize(Toolkit.getDefaultToolkit().getScreenSize());
 		
 		frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
 		frame.add(gamePanel);

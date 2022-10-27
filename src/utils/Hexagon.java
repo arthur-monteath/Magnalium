@@ -6,6 +6,7 @@ public class Hexagon {
 
 	private int[] x, y;
 	private int xPos, yPos;
+	private int[] index;
 	private int radius;
 	private Color color;
 	
@@ -72,5 +73,10 @@ public class Hexagon {
 	{
 		int[] a = {xPos, yPos};
 		return a;
+	}
+	
+	public int[] getIndex()
+	{
+		return index;
 	}
 }

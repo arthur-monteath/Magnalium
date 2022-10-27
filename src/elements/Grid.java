@@ -25,13 +25,13 @@ public class Grid {
 			{
 				if(init[i][j] == 1)
 				{
-					if(i%2==0)
+					if(j%2==0)
 					{
-						hex[i][j] = new Hexagon((int)(x + (3*hexRadius*j)), (int)(y + (hexApothem*i)), hexRadius);
+						hex[j][i] = new Hexagon((int)(x + (hexRadius/2*j*3)),(int)(y + ((hexApothem*2*i)+hexApothem)), hexRadius);
 					}
 					else
 					{
-						hex[i][j] = new Hexagon((int)(x + ((3*hexRadius*j)+(3*hexRadius/2))), (int)(y + (hexApothem*i)), hexRadius);
+						hex[j][i] = new Hexagon((int)(x + (hexRadius/2*j*3)),(int)(y + (hexApothem*2*i)), hexRadius);
 					}
 				}
 				else
@@ -48,7 +48,7 @@ public class Grid {
 		this.x = x;
 		this.y = y;
 		
-		hex = new Hexagon[row][col];
+		hex = new Hexagon[col][row];
 		
 		hexApothem = (int) (Math.cos(Math.toRadians(30.0))*hexRadius);
 		

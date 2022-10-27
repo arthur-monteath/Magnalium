@@ -18,6 +18,7 @@ public class MouseInput implements MouseListener, MouseMotionListener{
 	
 	@Override
 	public void mouseDragged(MouseEvent e) {
+		gamePanel.updateMousePosition(e);
 	}
 
 	@Override
@@ -34,11 +35,13 @@ public class MouseInput implements MouseListener, MouseMotionListener{
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
+		gamePanel.pressed(e);
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
+		gamePanel.released(e);
 	}
 
 	@Override
