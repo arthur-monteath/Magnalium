@@ -27,11 +27,11 @@ public class Grid {
 				{
 					if(j%2==0)
 					{
-						hex[j][i] = new Hexagon((int)(x + (hexRadius/2*j*3)),(int)(y + ((hexApothem*2*i)+hexApothem)), hexRadius);
+						hex[j][i] = new Hexagon((int)(x + (hexRadius/2*j*3)),(int)(y + ((hexApothem*2*i)+hexApothem)), hexRadius, j, i);
 					}
 					else
 					{
-						hex[j][i] = new Hexagon((int)(x + (hexRadius/2*j*3)),(int)(y + (hexApothem*2*i)), hexRadius);
+						hex[j][i] = new Hexagon((int)(x + (hexRadius/2*j*3)),(int)(y + (hexApothem*2*i)), hexRadius, j, i);
 					}
 				}
 				else
@@ -58,11 +58,11 @@ public class Grid {
 			{
 				if(j%2==0)
 				{
-					hex[j][i] = new Hexagon((int)(x + (hexRadius/2*j*3)),(int)(y + ((hexApothem*2*i)+hexApothem)), hexRadius);
+					hex[j][i] = new Hexagon((int)(x + (hexRadius/2*j*3)),(int)(y + ((hexApothem*2*i)+hexApothem)), hexRadius, j, i);
 				}
 				else
 				{
-					hex[j][i] = new Hexagon((int)(x + (hexRadius/2*j*3)),(int)(y + (hexApothem*2*i)), hexRadius);
+					hex[j][i] = new Hexagon((int)(x + (hexRadius/2*j*3)),(int)(y + (hexApothem*2*i)), hexRadius, j, i);
 				}
 			}
 		}
@@ -77,6 +77,11 @@ public class Grid {
 	public Hexagon getHex(int row, int col)
 	{
 		return hex[row][col];
+	}
+	
+	public Hexagon[][] getHexGrid()
+	{
+		return hex;
 	}
 	
 	public Hexagon getClosestHex(int posX, int posY)

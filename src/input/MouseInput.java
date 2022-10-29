@@ -6,6 +6,7 @@ import java.awt.event.MouseMotionListener;
 
 import main.GamePanel;
 import main.GameWindow;
+import utils.Hexagon;
 
 public class MouseInput implements MouseListener, MouseMotionListener{
 
@@ -29,12 +30,20 @@ public class MouseInput implements MouseListener, MouseMotionListener{
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		gamePanel.clicked(e);
 		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
+		for(Hexagon[] h: gamePanel.getGrid().getHexGrid())
+		{
+			for(Hexagon hx: h)
+			{
+				hx.checkState();
+			}
+		}
 		gamePanel.pressed(e);
 	}
 

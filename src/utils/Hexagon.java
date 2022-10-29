@@ -2,22 +2,35 @@ package utils;
 
 import java.awt.Color;
 
+import elements.Element;
+
 public class Hexagon {
 
 	private int[] x, y;
 	private int xPos, yPos;
-	private int[] index;
+	private int[] index = new int[2];
 	private int radius;
 	private Color color;
 	
+	public boolean isFree()
+	{
+		return element == null;
+	}
+	
 	// @param r = radius of the hexagon
-	public Hexagon(int xPos, int yPos, int r)
+	public Hexagon(int xPos, int yPos, int r, int row, int col)
 	{
 		this.xPos = xPos;
 		this.yPos = yPos;
 		this.radius = r;
 		
+		index[0] = row;
+		index[1] = col;
+		
 		color = new Color(222,180,108,255);
+		
+		if(index[0]==0)
+			colorToWhite();
 		
 		x = new int[6];
 		y = new int[6];
@@ -78,5 +91,27 @@ public class Hexagon {
 	public int[] getIndex()
 	{
 		return index;
+	}
+
+	private Element element;
+	
+	public Element getElement()
+	{
+		return element;
+	}
+	
+	public void checkState()
+	{
+		if(element!=null && element.getGrabbed())
+		{
+			element.setLock(false);
+			element = null;
+		}
+	}
+	
+	public void setElement(Element element) 
+	{
+		this.element = element;
+		element.setLock(true);
 	}
 }

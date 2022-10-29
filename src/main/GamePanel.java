@@ -12,10 +12,12 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+import elements.Combination;
 import elements.Element;
 import elements.Grid;
 
@@ -28,6 +30,8 @@ public class GamePanel extends JPanel {
 	
 	private int w,h;
 	
+	private BufferedImage[] sprites = new BufferedImage[12];
+	
 	public GamePanel()
 	{
 		mouseInput = new MouseInput(this);
@@ -37,16 +41,36 @@ public class GamePanel extends JPanel {
 		addMouseMotionListener(mouseInput);
 		this.setBackground(new Color(54, 41, 35));
 		
+		InputStream is = getClass().getResourceAsStream("/Button.png");
+		BufferedImage img = null;
+		
+		try {
+			img = ImageIO.read(is);
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		sprites[0] = img.getSubimage(0, 0, 128, 64);
+		sprites[1] = img.getSubimage(128, 0, 128, 64);
+		
 		for(int i = 1; i<Element.names.length; i++)
 		{
 			Element e = new Element(this, i);
-			if(i%2==0)
+			if(i%5==0)
 			{
-				e.setPos(128,(i/2)*64);
+				e.setPos(320,(i/5)*64);
 			}
 			else
 			{
-				e.setPos(64,((i+1)/2)*64);
+				e.setPos(i%5*64,((i+4)/5)*64);
 			}
 		}
 		
@@ -73,6 +97,59 @@ public class GamePanel extends JPanel {
 	}
 	
 	private int mx=0, my=0;
+	Element grabbed = null;
+	
+	public void updateGame() {
+		
+		grabbed = null;
+		for(Element element: Element.getList())
+		{
+			if(element.getGrabbed())
+			{
+				element.updatePos();
+				if(comb[0]!=null && comb[0].getGrabbed())
+					comb[0] = null;
+				else if(comb[1]!=null && comb[1].getGrabbed())
+					comb[1] = null;
+				grabbed = element;
+			}
+			else
+			{
+				Hexagon t = hexGrid.getClosestHex(element.getPos()[0]+Element.w/2,element.getPos()[1]+Element.h/2);
+				
+				if(t != null && t.isFree() && !element.getLock() && !element.getGrabbed())
+				{
+					element.setPos(Utils.centerPosition(t.getPos()[0], t.getPos()[1], Element.w, Element.h)[0],Utils.centerPosition(t.getPos()[0], t.getPos()[1], Element.w, Element.h)[1]);
+					t.setElement(element);
+				}
+				else if(t != null && !element.getLock() && !element.getGrabbed())
+				{
+					t.getElement().setGrabbed(true);
+					t.getElement().setLock(false);
+					element.setPos(Utils.centerPosition(t.getPos()[0], t.getPos()[1], Element.w, Element.h)[0],Utils.centerPosition(t.getPos()[0], t.getPos()[1], Element.w, Element.h)[1]);
+					t.setElement(element);
+				}
+				else if(!element.getLock() && element.getPos()[0] > x*0.4-32)
+				{
+					element.setPos(0,0);
+				}
+				else if(!element.getLock() && element.getPos()[1]+Element.h/2 >= 704)
+				{
+					int x = element.getPos()[0]+Element.w/2;
+					if(x >=64 && x<=128)
+					{
+						comb[0] = element;
+						element.setPos(64, 704);
+					}
+					else if(x >=320 && x<=384)
+					{
+						comb[1] = element;
+						element.setPos(320, 704);
+					}
+				}
+			}
+		}
+	}
 	
 	public int[] getMousePos()
 	{
@@ -91,6 +168,7 @@ public class GamePanel extends JPanel {
 	{
 		mx = e.getX();
 		my = e.getY();
+
 		for(Element element: Element.getList())
 		{
 			if(mx>=element.getPos()[0] && my>=element.getPos()[1] && mx<=element.getPos()[0]+Element.w && my<=element.getPos()[1]+Element.h)
@@ -100,6 +178,54 @@ public class GamePanel extends JPanel {
 		}
 	}
 	
+	public void clicked(MouseEvent e)
+	{
+		mx = e.getX();
+		my = e.getY();
+		
+		if(my >= 704)
+		{
+			if(mx >= 160 && mx <= 288 && comb[0] != null && comb[1] != null)
+			{
+				int result = Combination.getResult(comb[0].getID(), comb[1].getID());
+				if(result > 0)
+				{
+					Element.getList().remove(comb[0]);
+					Element.getList().remove(comb[1]);
+					comb[0] = null;
+					comb[1] = null;
+					Element el = new Element(this, result);
+					resetElementsOnStock();
+				}
+			}
+		}
+	}
+	
+	private void resetElementsOnStock()
+	{
+		ArrayList<Element> list = new ArrayList<Element>();
+		for(Element e: Element.getList())
+		{
+			if(!e.getLock())
+				list.add(e);
+		}
+		for(int i = 0; i<list.size(); i++)
+		{
+			i++;
+			if(i%5==0)
+			{
+				list.get(i-1).setPos(320,(i/5)*64);
+			}
+			else
+			{
+				list.get(i-1).setPos(i%5*64,((i+4)/5)*64);
+			}
+			i--;
+		}
+	}
+	
+	private Element[] comb = new Element[2];
+	
 	public void released(MouseEvent e)
 	{
 		
@@ -108,28 +234,6 @@ public class GamePanel extends JPanel {
 	public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g); // calls the JPanel's paint component method this is used to clean the surface
-		
-		/*for(int i = 0; i<init.length; i++)
-		{
-			for(int j = 0; j<init[0].length; j++)
-			{
-				if(hexGrid.getHex(i,j) != null)
-				{
-					g.setColor(hexGrid.getHex(i,j).getColor());
-					g.fillPolygon(
-							hexGrid.getHex(i,j).getPoints()[0],
-							hexGrid.getHex(i,j).getPoints()[1], 
-							hexGrid.getHex(i,j).getPoints()[0].length);
-					hexGrid.getHex(i, j).colorToDefault();
-					
-					g.setColor(Color.white);
-					g.drawPolygon(
-							hexGrid.getHex(i,j).getPoints()[0],
-							hexGrid.getHex(i,j).getPoints()[1], 
-							hexGrid.getHex(i,j).getPoints()[0].length);
-				}
-			}
-		}*/
 		
 		for(int i = 0; i<w; i++)
 		{
@@ -142,7 +246,6 @@ public class GamePanel extends JPanel {
 							hexGrid.getHex(i,j).getPoints()[0],
 							hexGrid.getHex(i,j).getPoints()[1], 
 							hexGrid.getHex(i,j).getPoints()[0].length);
-					hexGrid.getHex(i, j).colorToDefault();
 					
 					g.setColor(Color.white);
 					g.drawPolygon(
@@ -153,30 +256,31 @@ public class GamePanel extends JPanel {
 			}
 		}
 		
-		g.setColor(Color.white);
-		g.fillOval(64, 704, 66, 66);
-		g.fillOval(256, 704, 65, 66);
-		g.fillRect(145, 704, 96, 64);
+		g.setColor(new Color(39,31,25,255));
+		g.fillOval(64, 704, 64, 64);
+		g.fillOval(320, 704, 64, 64);
+		
+		if(comb[0] != null && comb[1] != null && Combination.getResult(comb[0].getID(), comb[1].getID()) > 0)
+		{
+			g.drawImage(sprites[1], 160, 704, null);
+		}
+		else
+		g.drawImage(sprites[0], 160, 704, null);
 		
 		for(Element element: Element.getList())
 		{
-			if(element.getGrabbed())
-			{
-				element.updatePos();
-			}
-			else
-			{
-				Hexagon t = hexGrid.getClosestHex(element.getPos()[0]+Element.w/2,element.getPos()[1]+Element.h/2);
-				if(t != null)
-				{
-					element.setPos(Utils.centerPosition(t.getPos()[0], t.getPos()[1], Element.w, Element.h)[0],Utils.centerPosition(t.getPos()[0], t.getPos()[1], Element.w, Element.h)[1]);
-				}
-				else
-				{
-					//element.setPos(0,0);
-				}
-			}
+			if(!element.getGrabbed())
 			g.drawImage(element.getImg(), element.getPos()[0], element.getPos()[1], null);
+		}
+		if(grabbed != null)
+		{
+			g.drawImage(grabbed.getImg(), grabbed.getPos()[0], grabbed.getPos()[1], null);
+		}
+		
+		g.setColor(Color.blue);
+		for(Integer[] c: Element.getConnections())
+		{
+			g.drawLine(c[0], c[1], c[2], c[3]);
 		}
 	}
 }
