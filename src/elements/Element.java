@@ -14,8 +14,14 @@ import utils.Utils;
 public class Element {
 	
 	private static ArrayList<Element> list = new ArrayList<Element>();
-	public static final String[] primary = {"", "fire", "water", "earth", "air", "ordo"};
-	public static final String[] names = {"", "fire", "water", "earth", "air", "ordo", "victus", "lux", "motus", "herba"};
+	public static final String[] primary = {"", "fire", "water", "earth", "air", "ordo", "perditio"};
+	
+	public static final String[] names = {"", 
+			"fire", "water", "earth", "air", "ordo", "perditio", "victus",
+			 "lux", "motus", "potentia", "vitreus", "herba", "gelum", "sano", "metallum",
+			 "death", "spiritus", "iter", "bestia", "cognitio", "tempestas", "limus", "vacuos"
+	};
+	
 	private BufferedImage img;
 	
 	private int x=0,y=0,mx=0,my=0, ID=0;
@@ -170,8 +176,8 @@ public class Element {
 		try {
 			img = ImageIO.read(is);
 			
-			int x = ID%4;
-			int y = ID/4;
+			int x = ID%8;
+			int y = ID/8;
 			img = img.getSubimage(x*64, y*64, 64, 64);
 			
 		} catch (IOException e) {

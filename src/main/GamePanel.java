@@ -64,13 +64,19 @@ public class GamePanel extends JPanel {
 		for(int i = 1; i<Element.names.length; i++)
 		{
 			Element e = new Element(this, i);
+			//Element e1 = new Element(this, i);
+			//Element e2 = new Element(this, i);
 			if(i%5==0)
 			{
 				e.setPos(320,(i/5)*64);
+				//e1.setPos(320,(i/5)*64);
+				//e2.setPos(320,(i/5)*64);
 			}
 			else
 			{
 				e.setPos(i%5*64,((i+4)/5)*64);
+				//e1.setPos(i%5*64,((i+4)/5)*64);
+				//e2.setPos(i%5*64,((i+4)/5)*64);
 			}
 		}
 		
@@ -133,7 +139,7 @@ public class GamePanel extends JPanel {
 				{
 					element.setPos(0,0);
 				}
-				else if(!element.getLock() && element.getPos()[1]+Element.h/2 >= 704)
+				else if(!element.getLock() && element.getPos()[1]+Element.h/2 >= 704 && element.getPos()[1]+Element.h/2 <=768)
 				{
 					int x = element.getPos()[0]+Element.w/2;
 					if(x >=64 && x<=128)
