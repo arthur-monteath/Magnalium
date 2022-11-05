@@ -37,8 +37,10 @@ public class Game implements Runnable {
 		{
 			for(Hexagon hx: h)
 			{
-				hx.checkState();
-				hx.colorToDefault();
+				if(hx!=null)
+				{
+					hx.colorToDefault();
+				}
 			}
 		}
 		

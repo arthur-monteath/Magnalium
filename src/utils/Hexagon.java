@@ -3,6 +3,7 @@ package utils;
 import java.awt.Color;
 
 import elements.Element;
+import elements.GridElement;
 
 public class Hexagon {
 
@@ -93,25 +94,15 @@ public class Hexagon {
 		return index;
 	}
 
-	private Element element;
+	private GridElement element;
 	
-	public Element getElement()
+	public GridElement getElement()
 	{
 		return element;
 	}
 	
-	public void checkState()
-	{
-		if(element!=null && element.getGrabbed())
-		{
-			element.setLock(false);
-			element = null;
-		}
-	}
-	
-	public void setElement(Element element) 
+	public void setElement(GridElement element) 
 	{
 		this.element = element;
-		element.setLock(true);
 	}
 }

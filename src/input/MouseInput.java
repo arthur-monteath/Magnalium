@@ -37,13 +37,6 @@ public class MouseInput implements MouseListener, MouseMotionListener{
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-		for(Hexagon[] h: gamePanel.getGrid().getHexGrid())
-		{
-			for(Hexagon hx: h)
-			{
-				hx.checkState();
-			}
-		}
 		gamePanel.pressed(e);
 	}
 

@@ -1,5 +1,6 @@
 package elements;
 
+import main.GamePanel;
 import utils.Hexagon;
 
 public class Grid {
@@ -10,20 +11,21 @@ public class Grid {
 	
 	private int[][] init;
 	
-	public Grid(int[][] init, int x, int y, int radius)
+	public Grid(int[][] init, int x, int y, int radius, GamePanel gp)
 	{
+		hexRadius = radius;
 		this.x = x;
 		this.y = y;
-		hexRadius = radius;
-		hex = new Hexagon[init.length][init[0].length];
+		
+		hex = new Hexagon[init[0].length][init.length];
 		
 		hexApothem = (int) (Math.cos(Math.toRadians(30.0))*hexRadius);
 		
-		for(int i = 0; i<hex.length; i++)
+		for(int i = 0; i<init.length; i++)
 		{
-			for(int j = 0; j<hex[0].length; j++)
+			for(int j = 0; j<init[0].length; j++)
 			{
-				if(init[i][j] == 1)
+				if(init[i][j]==0)
 				{
 					if(j%2==0)
 					{
@@ -34,9 +36,21 @@ public class Grid {
 						hex[j][i] = new Hexagon((int)(x + (hexRadius/2*j*3)),(int)(y + (hexApothem*2*i)), hexRadius, j, i);
 					}
 				}
+				else if(init[i][j]>0)
+				{
+					Element e = new GridElement(gp,init[i][j],true);
+					if(j%2==0)
+					{
+						e.setPos((int)(x + (hexRadius/2*j*3)-Element.w/2),(int)(y + (hexApothem*2*i)-Element.h/2)+hexApothem);
+					}
+					else
+					{
+						e.setPos((int)(x + (hexRadius/2*j*3)-Element.w/2),(int)(y + (hexApothem*2*i)-Element.h/2));
+					}
+				}
 				else
 				{
-					hex[i][j] = null;
+					hex[j][i] = null;
 				}
 			}
 		}
