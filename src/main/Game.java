@@ -37,14 +37,14 @@ public class Game implements Runnable {
 		{
 			for(Hexagon hx: h)
 			{
-				if(hx!=null)
+				if(hx!=null && !hx.isElementHex())
 				{
 					hx.colorToDefault();
 				}
 			}
 		}
 		
-		if(hex != null)
+		if(hex != null && !hex.isElementHex())
 		{
 			hex.colorToWhite();
 		}

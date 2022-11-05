@@ -29,22 +29,26 @@ public class Grid {
 				{
 					if(j%2==0)
 					{
-						hex[j][i] = new Hexagon((int)(x + (hexRadius/2*j*3)),(int)(y + ((hexApothem*2*i)+hexApothem)), hexRadius, j, i);
+						hex[j][i] = new Hexagon((int)(x + (hexRadius/2*j*3)),(int)(y + ((hexApothem*2*i)+hexApothem)), hexRadius, j, i, false);
 					}
 					else
 					{
-						hex[j][i] = new Hexagon((int)(x + (hexRadius/2*j*3)),(int)(y + (hexApothem*2*i)), hexRadius, j, i);
+						hex[j][i] = new Hexagon((int)(x + (hexRadius/2*j*3)),(int)(y + (hexApothem*2*i)), hexRadius, j, i, false);
 					}
 				}
 				else if(init[i][j]>0)
 				{
-					Element e = new GridElement(gp,init[i][j],true);
+					GridElement e = new GridElement(gp,init[i][j],true);
 					if(j%2==0)
 					{
+						hex[j][i] = new Hexagon((int)(x + (hexRadius/2*j*3)),(int)(y + ((hexApothem*2*i)+hexApothem)), hexRadius, j, i, true);
+						hex[j][i].setElement(e);
 						e.setPos((int)(x + (hexRadius/2*j*3)-Element.w/2),(int)(y + (hexApothem*2*i)-Element.h/2)+hexApothem);
 					}
 					else
 					{
+						hex[j][i] = new Hexagon((int)(x + (hexRadius/2*j*3)),(int)(y + (hexApothem*2*i)), hexRadius, j, i, true);
+						hex[j][i].setElement(e);
 						e.setPos((int)(x + (hexRadius/2*j*3)-Element.w/2),(int)(y + (hexApothem*2*i)-Element.h/2));
 					}
 				}
@@ -72,11 +76,11 @@ public class Grid {
 			{
 				if(j%2==0)
 				{
-					hex[j][i] = new Hexagon((int)(x + (hexRadius/2*j*3)),(int)(y + ((hexApothem*2*i)+hexApothem)), hexRadius, j, i);
+					hex[j][i] = new Hexagon((int)(x + (hexRadius/2*j*3)),(int)(y + ((hexApothem*2*i)+hexApothem)), hexRadius, j, i, false);
 				}
 				else
 				{
-					hex[j][i] = new Hexagon((int)(x + (hexRadius/2*j*3)),(int)(y + (hexApothem*2*i)), hexRadius, j, i);
+					hex[j][i] = new Hexagon((int)(x + (hexRadius/2*j*3)),(int)(y + (hexApothem*2*i)), hexRadius, j, i, false);
 				}
 			}
 		}

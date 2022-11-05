@@ -34,6 +34,11 @@ public class GridElement extends Element {
 		bi = builtin;
 	}
 	
+	public boolean isBuiltIn()
+	{
+		return bi;
+	}
+	
 	private static ArrayList<Integer[]> connections = new ArrayList<Integer[]>();
 	
 	public static ArrayList<Integer[]> getConnections()

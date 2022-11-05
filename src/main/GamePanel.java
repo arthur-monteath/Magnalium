@@ -149,63 +149,6 @@ public class GamePanel extends JPanel {
 		mx = e.getX();
 		my = e.getY();
 
-		if(Window==0)
-		{
-			if(grabbed==null)
-			{
-				Hexagon h = hexGrid.getClosestHex(mx, my);
-				if(h!=null&&h.getElement()!=null)
-				{
-					GridElement.getGList().remove(h.getElement());
-					new GrabElement(this, h.getElement().getID());
-					h.setElement(null);
-				}
-				for(StockElement sElement: StockElement.getStock())
-				{
-					if(mx>=sElement.getPos()[0] && my>=sElement.getPos()[1] && mx<=sElement.getPos()[0]+Element.w && my<=sElement.getPos()[1]+Element.h && sElement.getAmount()>0)
-					{
-						grabbed = new GrabElement(this, sElement.getID());
-						sElement.increase(-1);
-					}
-				}
-			}
-			else
-			{
-				Hexagon h = hexGrid.getClosestHex(mx, my);
-				if(h!=null&&h.getElement()==null)
-				{
-					grabbed.lock();
-					grabbed = null;
-				}
-				else if(h!=null)
-				{
-					int t = h.getElement().getID();
-					grabbed.lock();
-					grabbed = new GrabElement(this, t);
-				}
-				else
-				{
-					addToStock(grabbed.getID());
-					grabbed.release();
-					grabbed = null;
-				}
-			}
-		}
-		else if(Window==1)
-		{
-			
-		}
-		else if(Window==2)
-		{
-			
-		}
-	}
-	
-	public void clicked(MouseEvent e)
-	{
-		mx = e.getX();
-		my = e.getY();
-		
 		if(mx<=32)
 		{
 			if(my<=y/3)
@@ -221,7 +164,71 @@ public class GamePanel extends JPanel {
 				Window = 2;
 			}
 		}
-		else if(Window==0)
+		
+		if(Window==0)
+		{
+			if(grabbed==null)
+			{
+				Hexagon h = hexGrid.getClosestHex(mx, my);
+				if(h!=null&&!h.isElementHex()&&h.getElement()!=null)
+				{
+					GridElement.getGList().remove(h.getElement());
+					new GrabElement(this, h.getElement().getID(), mx-Element.w/2, my-Element.h/2);
+					h.setElement(null);
+				}
+				for(StockElement sElement: StockElement.getStock())
+				{
+					if(mx>=sElement.getPos()[0] && my>=sElement.getPos()[1] && mx<=sElement.getPos()[0]+Element.w && my<=sElement.getPos()[1]+Element.h && sElement.getAmount()>0)
+					{
+						grabbed = new GrabElement(this, sElement.getID(), mx-Element.w/2, my-Element.h/2);
+						sElement.increase(-1);
+					}
+				}
+			}
+			else
+			{
+				Hexagon h = hexGrid.getClosestHex(mx, my);
+				if(h!=null&&h.getElement()==null)
+				{
+					grabbed.lock(h);
+					grabbed = null;
+				}
+				else if(h!=null)
+				{
+					int t = h.getElement().getID();
+					GridElement.getGList().remove(h.getElement());
+					grabbed.lock(h);
+					grabbed = new GrabElement(this, t, mx-Element.w/2, my-Element.h/2);
+				}
+				else
+				{
+					addToStock(grabbed.getID());
+					grabbed.release();
+					grabbed = null;
+				}
+			}
+		}
+		else if(Window==1)
+		{
+			if(mx>=100&&mx<=200&&my>=100&&my<=200)
+			{
+				Random rand = new Random();
+				int id = rand.nextInt(1, 7);
+				addToStock(id);
+			}
+		}
+		else if(Window==2)
+		{
+			
+		}
+	}
+	
+	public void clicked(MouseEvent e)
+	{
+		mx = e.getX();
+		my = e.getY();
+		
+		if(Window==0)
 		{
 			if(my >= 704)
 			{
@@ -242,12 +249,7 @@ public class GamePanel extends JPanel {
 		}
 		else if(Window==1)
 		{
-			if(mx>=100&&mx<=200&&my>=100&&my<=200)
-			{
-				Random rand = new Random();
-				int id = rand.nextInt(1, 7);
-				addToStock(id);
-			}
+			
 		}
 		else if(Window==2)
 		{

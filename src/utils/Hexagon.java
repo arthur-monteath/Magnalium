@@ -12,6 +12,7 @@ public class Hexagon {
 	private int[] index = new int[2];
 	private int radius;
 	private Color color;
+	private boolean elementHex = false;
 	
 	public boolean isFree()
 	{
@@ -19,16 +20,16 @@ public class Hexagon {
 	}
 	
 	// @param r = radius of the hexagon
-	public Hexagon(int xPos, int yPos, int r, int row, int col)
+	public Hexagon(int xPos, int yPos, int r, int row, int col, boolean ieh)
 	{
+		elementHex = ieh;
+		
 		this.xPos = xPos;
 		this.yPos = yPos;
 		this.radius = r;
 		
 		index[0] = row;
 		index[1] = col;
-		
-		color = new Color(222,180,108,255);
 		
 		if(index[0]==0)
 			colorToWhite();
@@ -54,6 +55,15 @@ public class Hexagon {
 		{
 			x[i] += xPos;
 			y[i] += yPos;
+		}
+		
+		if(elementHex)
+		{
+			color = new Color(155,127,75,255);
+		}
+		else
+		{
+			color = new Color(222,180,108,255);
 		}
 	}
 	
@@ -104,5 +114,9 @@ public class Hexagon {
 	public void setElement(GridElement element) 
 	{
 		this.element = element;
+	}
+
+	public boolean isElementHex() {
+		return elementHex;
 	}
 }

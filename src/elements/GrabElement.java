@@ -28,6 +28,15 @@ public class GrabElement extends Element{
 		GamePanel.resetElementsOnStock();
 	}
 	
+	public GrabElement(GamePanel gamePanel, int id, int x, int y) {
+		super(id);
+		this.x = x;
+		this.y = y;
+		this.gamePanel = gamePanel;
+		grabElement = this;
+		GamePanel.resetElementsOnStock();
+	}
+	
 	public void updateToMouse(int mx, int my)
 	{
 		int[] pos = Utils.centerPosition(mx, my, w, h);
@@ -48,13 +57,12 @@ public class GrabElement extends Element{
 	
 	private Hexagon hex;
 	
-	public GridElement lock() {
-			hex = gamePanel.getGrid().getClosestHex(x+Element.w/2,y+Element.h/2);
-			GridElement el = new GridElement(gamePanel, getID(), false);
-			el.setPos(hex.getPos()[0]-w/2,hex.getPos()[1]-h/2);
-			hex.setElement(el);
-			grabElement = null;
-			return el;
+	public GridElement lock(Hexagon hex) {
+		GridElement el = new GridElement(gamePanel, getID(), false);
+		el.setPos(hex.getPos()[0]-w/2,hex.getPos()[1]-h/2);
+		hex.setElement(el);
+		grabElement = null;
+		return el;
 	}
 	
 	public void release()
