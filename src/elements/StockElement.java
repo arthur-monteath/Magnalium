@@ -10,7 +10,14 @@ public class StockElement extends Element {
 	
 	public StockElement(int id) {
 		super(id);
+		
 		stock.add(this);
+		
+		if(!getList().contains(id))
+		{
+			getList().add(id);
+		}
+		
 		GamePanel.resetElementsOnStock();
 	}
 	
@@ -19,9 +26,14 @@ public class StockElement extends Element {
 	public void increase(int n)
 	{
 		amount+=n;
-		if(amount<0)
+		if(amount<=0)
 		{
+			setImg("/ElementsSpritesheetZero.png");
 			amount = 0;
+		}
+		else
+		{
+			setImg("/ElementsSpritesheet.png");
 		}
 	}
 	

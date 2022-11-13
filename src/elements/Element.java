@@ -14,38 +14,28 @@ public abstract class Element {
 	public static final String[] primary = {"", "fire", "water", "earth", "air", "ordo", "perditio"};
 	
 	public static final String[] names = {"", 
-			"fire", "water", "earth", "air", "ordo", "perditio", "victus",
-			 "lux", "motus", "potentia", "vitreus", "herba", "gelum", "sano", "metallum",
-			 "death", "spiritus", "iter", "bestia", "cognitio", "tempestas", "limus", "vacuos"
+			"fire", "water", "earth", "air", "ordo", "perditio", 
+			"victus","lux","motus","potentia","vitreus","herba",
+			"gelum","sano","metallum","death","spiritus","iter", 
+			"bestia","cognitio","tempestas","limus","vacuos","praecantatio", 
+			"natura"
 	};
 	
 	private BufferedImage img;
 	
-	private int x=0,y=0,mx=0,my=0, ID=0;
+	private int x=0,y=0,ID=0;
 	public static final int w=64,h=64;
-	private int[] index;
 	
 	public static ArrayList<Integer> getList()
 	{
 		return list;
 	}
-	
+	 
 	public Element(int id)
 	{
 		ID = id;
-		boolean has = false;
-		for(Integer e: list)
-		{
-			if(e == id)
-			{
-				has = true;
-			}
-		}
-		if(!has)
-		{
-			list.add(id);
-		}
-		setImg();
+		
+		setImg("/ElementsSpritesheet.png");
 	}
 	
 	public void setPos(int x, int y)
@@ -86,20 +76,17 @@ public abstract class Element {
 		}
 		return 0;
 	}
-	
-	public int[] getIndex() {
-		return index;
-	}
 
-	private void setImg()
+	public void setImg(String file)
 	{
-		InputStream is = getClass().getResourceAsStream("/ElementsSpritesheet.png");
+		InputStream is = getClass().getResourceAsStream(file);
 		
 		try {
 			img = ImageIO.read(is);
 			
 			int x = ID%8;
 			int y = ID/8;
+			unknown = img.getSubimage(0, 0, 64, 64);
 			img = img.getSubimage(x*64, y*64, 64, 64);
 			
 		} catch (IOException e) {
@@ -112,6 +99,13 @@ public abstract class Element {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	private BufferedImage unknown;
+	
+	public BufferedImage getUnknown()
+	{
+		return unknown;
 	}
 	
 	public BufferedImage getImg()

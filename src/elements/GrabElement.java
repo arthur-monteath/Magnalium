@@ -1,22 +1,12 @@
 package elements;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-
-import javax.imageio.ImageIO;
-
 import main.GamePanel;
 import utils.Hexagon;
 import utils.Utils;
 
 public class GrabElement extends Element{
 	
-	private BufferedImage img;
-	
-	private int x=0,y=0,mx=0,my=0;
-	public static final int w=64,h=64;
+	private int x=0,y=0;
 	
 	private GamePanel gamePanel;
 	private static GrabElement grabElement = null;
@@ -25,6 +15,12 @@ public class GrabElement extends Element{
 		super(id);
 		this.gamePanel = gamePanel;
 		grabElement = this;
+		
+		if(!getList().contains(id))
+		{
+			getList().add(id);
+		}
+		
 		GamePanel.resetElementsOnStock();
 	}
 	
@@ -34,6 +30,12 @@ public class GrabElement extends Element{
 		this.y = y;
 		this.gamePanel = gamePanel;
 		grabElement = this;
+		
+		if(!getList().contains(id))
+		{
+			getList().add(id);
+		}
+		
 		GamePanel.resetElementsOnStock();
 	}
 	
@@ -55,12 +57,11 @@ public class GrabElement extends Element{
 		return gamePanel;
 	}
 	
-	private Hexagon hex;
-	
 	public GridElement lock(Hexagon hex) {
-		GridElement el = new GridElement(gamePanel, getID(), false);
+		GridElement el = new GridElement(gamePanel, getID(), hex.getIndex()[0],hex.getIndex()[1],false);
 		el.setPos(hex.getPos()[0]-w/2,hex.getPos()[1]-h/2);
 		hex.setElement(el);
+		GridElement.checkNeighborsOfGridElements();
 		grabElement = null;
 		return el;
 	}
