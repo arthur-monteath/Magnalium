@@ -16,4 +16,14 @@ public class ZephyrSword implements Item {
 	};
 	
 	public static final int[] energized = {4,3};
+	
+	public int[][] getGrid()
+	{
+		return grid;
+	}
+	
+	public int[] getEnergized()
+	{
+		return energized;
+	}
 }

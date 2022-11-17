@@ -62,6 +62,25 @@ public class GamePanel extends JPanel {
 		sprites[0] = img.getSubimage(0, 0, 128, 64);
 		sprites[1] = img.getSubimage(128, 0, 128, 64);
 		
+		is = getClass().getResourceAsStream("/battleScenePlaceHolder.png");
+		img = null;
+		
+		try {
+			img = ImageIO.read(is);
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		sprites[2] = img;
+		
 		for(int i = 1; i<Element.primary.length; i++)
 		{
 			for(int j = 0; j<99; j++)
@@ -88,8 +107,15 @@ public class GamePanel extends JPanel {
 		
 		new Research();
 		
-		int gridId = 1;
-		hexGrid = new Grid(Research.getList().get(gridId), (int)(0.4*x), (int)(0.1*y), 40, this);
+		int gridId = 0;
+		hexGrid = new Grid(gridId, (int)(0.4*x), (int)(0.1*y), (int)(Element.w-(Element.w/4)), this);
+		GridElement.checkNeighborsOfGridElements();
+	}
+	
+	public void createNewGrid(int gridId)
+	{
+		GridElement.getGList().clear();
+		hexGrid = new Grid(gridId, (int)(0.4*x), (int)(0.1*y), 40, this);
 		GridElement.checkNeighborsOfGridElements();
 	}
 	
@@ -317,11 +343,11 @@ public class GamePanel extends JPanel {
 			i++;
 			if(i%5==0)
 			{
-				list.get(i-1).setPos(320,(i/5)*64);
+				list.get(i-1).setPos(Element.w*5,(i/5)*Element.w);
 			}
 			else
 			{
-				list.get(i-1).setPos(i%5*64,((i+4)/5)*64);
+				list.get(i-1).setPos(i%5*Element.w,((i+4)/5)*Element.w);
 			}
 			i--;
 		}
@@ -343,15 +369,46 @@ public class GamePanel extends JPanel {
 					int result = Combination.getResult(comb[0].getID(), comb[1].getID());
 					if(result > 0)
 					{
-						FixedElement.getFList().remove(comb[0]);
-						FixedElement.getFList().remove(comb[1]);
+						if(grabbed!=null)
+						{
+							addToStock(grabbed.getID());
+							grabbed.release();
+						}
+
+						for(StockElement st: StockElement.getStock())
+						{
+							if(comb[0] != null && comb[0].getID()==st.getID())
+							{
+								if(st.getAmount()>0)
+								{
+									st.increase(-1);
+									resetElementsOnStock();
+								}
+								else
+								{
+									FixedElement.getFList().remove(comb[0]);
+									comb[0] = null;
+								}
+							}
+							else if(comb[1] != null && comb[1].getID()==st.getID())
+							{
+								if(st.getAmount()>0)
+								{
+									st.increase(-1);
+									resetElementsOnStock();
+								}
+								else
+								{
+									FixedElement.getFList().remove(comb[1]);
+									comb[1] = null;
+								}
+							}
+						}
 						StockElement sE = addToStock(result);
 						if(sE!=null)
 						{
 							sE.increase(-1);
 						}
-						comb[0] = null;
-						comb[1] = null;
 						grabbed = new GrabElement(this, result, mx-Element.w/2, my-Element.h/2);
 						resetElementsOnStock();
 						canComb = comb[0] != null && comb[1] != null && Combination.getResult(comb[0].getID(), comb[1].getID()) > 0;
@@ -417,7 +474,7 @@ public class GamePanel extends JPanel {
 
 			for(StockElement element: StockElement.getStock())
 			{
-				g.drawImage(element.getImg(), element.getPos()[0], element.getPos()[1], null);
+				g.drawImage(element.getImg(), element.getPos()[0], element.getPos()[1], Element.w, Element.h, null);
 			}
 			
 			g.setColor(Color.white);
@@ -430,18 +487,18 @@ public class GamePanel extends JPanel {
 			for(GridElement element: GridElement.getGList())
 				if(Element.getList().contains(element.getID()))
 				{
-					g.drawImage(element.getImg(), element.getPos()[0], element.getPos()[1], null);
+					g.drawImage(element.getImg(), element.getPos()[0], element.getPos()[1], Element.w, Element.h, null);
 				}
 				else
 				{
-					g.drawImage(element.getUnknown(), element.getPos()[0], element.getPos()[1], null);
+					g.drawImage(element.getUnknown(), element.getPos()[0], element.getPos()[1], Element.w, Element.h, null);
 				}
 			
 			for(FixedElement element: FixedElement.getFList())
-				g.drawImage(element.getImg(), element.getPos()[0], element.getPos()[1], null);
+				g.drawImage(element.getImg(), element.getPos()[0], element.getPos()[1], Element.w, Element.h, null);
 			
 			if(grabbed != null)
-				g.drawImage(grabbed.getImg(), grabbed.getPos()[0], grabbed.getPos()[1], null);
+				g.drawImage(grabbed.getImg(), grabbed.getPos()[0], grabbed.getPos()[1], Element.w, Element.h, null);
 			
 			for(Integer[] c: GridElement.getConnections())
 			{
@@ -484,10 +541,13 @@ public class GamePanel extends JPanel {
 		}
 		else if(Window==2)
 		{
+			g.drawImage(sprites[2], 0, 0, null);
+
 			g.fillRect(0, 2*y/3, 32, y/3);
 			g.setColor(new Color(234,214,182,255));
 			g.drawLine(0, y/3, 31, y/3);
 			g.drawLine(0, 2*y/3, 31, 2*y/3);
+			
 		}
 	}
 }

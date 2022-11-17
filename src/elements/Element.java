@@ -18,13 +18,13 @@ public abstract class Element {
 			"victus","lux","motus","potentia","vitreus","herba",
 			"gelum","sano","metallum","death","spiritus","iter", 
 			"bestia","cognitio","tempestas","limus","vacuos","praecantatio", 
-			"natura"
+			"natura","poison"
 	};
 	
 	private BufferedImage img;
 	
 	private int x=0,y=0,ID=0;
-	public static final int w=64,h=64;
+	public static final int w=128,h=128;
 	
 	public static ArrayList<Integer> getList()
 	{

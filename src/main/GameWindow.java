@@ -1,6 +1,5 @@
 package main;
 
-import java.awt.Color;
 import java.awt.Toolkit;
 
 import javax.swing.JFrame;
@@ -13,8 +12,7 @@ public class GameWindow {
 	{
 		frame = new JFrame();
 		
-		//frame.setSize(500,500);
-		frame.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+		frame.setSize(1920,1080);
 		
 		frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
 		frame.add(gamePanel);
@@ -23,6 +21,8 @@ public class GameWindow {
 		frame.setResizable(false);
 		
 		frame.setVisible(true);
+		
+		//device.setFullScreenWindow(frame);
 	}
 	
 	public void setPos(int x, int y)

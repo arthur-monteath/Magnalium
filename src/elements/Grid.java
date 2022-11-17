@@ -1,6 +1,7 @@
 package elements;
 
 import items.Item;
+import items.Research;
 import main.GamePanel;
 import utils.Hexagon;
 
@@ -10,13 +11,15 @@ public class Grid {
 	
 	private Hexagon[][] hex;
 	
-	public Grid(Item item, int x, int y, int radius, GamePanel gp)
+	public Grid(int gridId, int x, int y, int radius, GamePanel gp)
 	{
 		hexRadius = radius;
 		this.x = x;
 		this.y = y;
 		
-		int[][] init = item.grid;
+		Item item = Research.getList().get(gridId);
+		
+		int[][] init = item.getGrid();
 		
 		hex = new Hexagon[init[0].length][init.length];
 		
@@ -40,7 +43,7 @@ public class Grid {
 				else if(init[i][j]>0)
 				{
 					GridElement e = null;
-					if(i == item.energized[0] && j == item.energized[1])
+					if(i == item.getEnergized()[0] && j == item.getEnergized()[1])
 					{
 						e = new GridElement(gp,init[i][j],j,i,true, true);
 					}

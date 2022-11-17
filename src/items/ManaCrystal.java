@@ -15,4 +15,14 @@ public class ManaCrystal implements Item {
 	};
 	
 	public static final int[] energized = {0,3};
+
+	public int[][] getGrid()
+	{
+		return grid;
+	}
+	
+	public int[] getEnergized()
+	{
+		return energized;
+	}
 }

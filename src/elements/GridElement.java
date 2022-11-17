@@ -10,12 +10,12 @@ public class GridElement extends Element {
 
 	private int[] index = {0,0};
 	
-	private GamePanel gamePanel;
+	private static GamePanel gamePanel;
 	
 	public GridElement(GamePanel gamePanel, int id, int i, int j,boolean builtin) {
 		super(id);
 		
-		this.gamePanel = gamePanel;
+		GridElement.gamePanel = gamePanel;
 		
 		index[0] = i;
 		index[1] = j;
@@ -31,7 +31,7 @@ public class GridElement extends Element {
 	public GridElement(GamePanel gamePanel, int id, int i, int j,boolean builtin,boolean energized) {
 		super(id);
 		
-		this.gamePanel = gamePanel;
+		GridElement.gamePanel = gamePanel;
 		
 		index[0] = i;
 		index[1] = j;
@@ -135,6 +135,8 @@ public class GridElement extends Element {
 	
 	public static void checkNeighborsOfGridElements()
 	{
+		boolean abe = true;
+		
 		for(GridElement e: gridList)
 		{
 			e.energized = e.bEnergized;
@@ -143,6 +145,7 @@ public class GridElement extends Element {
 		int oEnergy = -1;
 		while(cEnergy!=oEnergy)
 		{
+			abe = true;
 			oEnergy = cEnergy;
 			cEnergy = 0;
 			
@@ -150,6 +153,10 @@ public class GridElement extends Element {
 			for(GridElement e: gridList)
 			{
 				e.checkForNeighbors();
+				if(e.isBuiltIn() && !e.getEnergized())
+				{
+					abe = false;
+				}
 			}
 			for(Integer[] c: connections)
 			{
@@ -177,6 +184,11 @@ public class GridElement extends Element {
 			{
 				e.setImg("/ElementsSpritesheet.png");
 			}
+		}
+		
+		if(abe)
+		{
+			gamePanel.createNewGrid(1);
 		}
 	}
 

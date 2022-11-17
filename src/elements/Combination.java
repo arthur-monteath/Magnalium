@@ -22,7 +22,8 @@ public class Combination {
 				{2,7}, // Water + Life
 				{4,6}, // Air + Perditio
 				{4,10},
-				{24,12}
+				{24,12},
+				{2,6},
 		};
 	
 	//private static final int[] results = {7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,23}; ( just add +7 to the index of combinations )

@@ -16,4 +16,7 @@ public interface Item {
 	};
 	
 	public static final int[] energized = {4,3};
+	
+	public int[][] getGrid();
+	public int[] getEnergized();
 }
