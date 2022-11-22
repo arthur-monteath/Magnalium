@@ -45,4 +45,14 @@ public class Combination {
 		
 		return 0;
 	}
+	
+	public static int[] getRecipe(int e)
+	{
+		if(e-7<combinations.length && e-7>=0)
+		{
+			return combinations[e-7];
+		}
+		
+		return null;
+	}
 }

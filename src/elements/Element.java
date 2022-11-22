@@ -1,5 +1,6 @@
 package elements;
 
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,17 +15,19 @@ public abstract class Element {
 	public static final String[] primary = {"", "fire", "water", "earth", "air", "ordo", "perditio"};
 	
 	public static final String[] names = {"", 
-			"fire", "water", "earth", "air", "ordo", "perditio", 
-			"victus","lux","motus","potentia","vitreus","herba",
-			"gelum","sano","metallum","death","spiritus","iter", 
-			"bestia","cognitio","tempestas","limus","vacuos","praecantatio", 
-			"natura","poison"
+			"fire", "water", "earth", "air", "order", "chaos", 
+			"life","light","motion","energy","crystal","plant",
+			"ice","sano","metal","death","spirit","iter", 
+			"creature","brain","storm","slime","void","sorcery", 
+			"natura"
 	};
 	
 	private BufferedImage img;
 	
 	private int x=0,y=0,ID=0;
-	public static final int w=128,h=128;
+	public static final double scale = 1.25f;
+	public static final int w=(int) ((Toolkit.getDefaultToolkit().getScreenSize().getHeight()/16.875)*scale),h=(int) ((Toolkit.getDefaultToolkit().getScreenSize().getHeight()/16.875)*scale);
+	
 	
 	public static ArrayList<Integer> getList()
 	{

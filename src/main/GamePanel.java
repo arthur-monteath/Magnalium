@@ -33,6 +33,8 @@ public class GamePanel extends JPanel {
 	
 	private BufferedImage[] sprites = new BufferedImage[12];
 	
+	private boolean paused = false, bookOpen = false;
+	
 	public GamePanel()
 	{
 		mouseInput = new MouseInput(this);
@@ -62,7 +64,7 @@ public class GamePanel extends JPanel {
 		sprites[0] = img.getSubimage(0, 0, 128, 64);
 		sprites[1] = img.getSubimage(128, 0, 128, 64);
 		
-		is = getClass().getResourceAsStream("/battleScenePlaceHolder.png");
+		is = getClass().getResourceAsStream("/BookButton.png");
 		img = null;
 		
 		try {
@@ -80,6 +82,44 @@ public class GamePanel extends JPanel {
 		}
 		
 		sprites[2] = img;
+		
+		is = getClass().getResourceAsStream("/Book.png");
+		img = null;
+		
+		try {
+			img = ImageIO.read(is);
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		sprites[3] = img;
+		
+		is = getClass().getResourceAsStream("/battleScenePlaceHolder.png");
+		img = null;
+		
+		try {
+			img = ImageIO.read(is);
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		sprites[11] = img;
 		
 		for(int i = 1; i<Element.primary.length; i++)
 		{
@@ -108,8 +148,8 @@ public class GamePanel extends JPanel {
 		new Research();
 		
 		int gridId = 0;
-		hexGrid = new Grid(gridId, (int)(0.4*x), (int)(0.1*y), (int)(Element.w-(Element.w/4)), this);
-		GridElement.checkNeighborsOfGridElements();
+		hexGrid = new Grid(gridId, (int)(0.4*x), (int)(0.1*y), (int)((Toolkit.getDefaultToolkit().getScreenSize().getHeight()/27)*Element.scale), this);
+		//GridElement.checkNeighborsOfGridElements();
 	}
 	
 	public void createNewGrid(int gridId)
@@ -127,10 +167,11 @@ public class GamePanel extends JPanel {
 	
 	private int mx=0, my=0;
 	GrabElement grabbed = null;
+	boolean SquareSide = true;
 	
 	public void updateGame() {
 		
-		if(Window==0)
+		if(Window==0 && !paused)
 		{
 			grabbed = GrabElement.getGrabbed();
 			
@@ -141,9 +182,33 @@ public class GamePanel extends JPanel {
 		}
 		else if(Window==1)
 		{
+			cGrabbed = IComponent.getGrabbed();
 			
+			if(cGrabbed!=null)
+			{
+				cGrabbed.updateToMouse(mx,my);
+			}
 		}
-		else if(Window==2)
+		if(Window==0)
+		{
+			if(SquareSide)
+			{
+				WSquare+=2;
+				if(WSquare >= MaxSpace-WWidth)
+				{
+					SquareSide = false;
+				}
+			}
+			else
+			{
+				WSquare-=2;
+				if(WSquare <= 0)
+				{
+					SquareSide = true;
+				}
+			}
+		}
+		else if(Window==3)
 		{
 			
 		}
@@ -171,21 +236,25 @@ public class GamePanel extends JPanel {
 
 		if(mx<=32)
 		{
-			if(my<=y/3)
+			if(my<=y/4)
 			{
 				Window = 0;
 			}
-			else if(my<=(2*y)/3)
+			else if(my<=(2*y)/4)
 			{
 				Window = 1;
 			}
-			else
+			else if(my<=(3*y)/4)
 			{
 				Window = 2;
 			}
+			else
+			{
+				Window = 3;
+			}
 		}
 		
-		if(Window==0)
+		if(Window==0 && !paused)
 		{
 			if(grabbed==null)
 			{
@@ -195,7 +264,7 @@ public class GamePanel extends JPanel {
 					GridElement.getGList().remove(h.getElement());
 					new GrabElement(this, h.getElement().getID(), mx-Element.w/2, my-Element.h/2);
 					h.setElement(null);
-					GridElement.checkNeighborsOfGridElements();
+					//GridElement.checkNeighborsOfGridElements();
 				}
 				for(StockElement sElement: StockElement.getStock())
 				{
@@ -222,6 +291,16 @@ public class GamePanel extends JPanel {
 						canComb = comb[0] != null && comb[1] != null && Combination.getResult(comb[0].getID(), comb[1].getID()) > 0;
 					}
 				}
+				else if(mx>x-64 && my<64)
+				{
+					if(grabbed!=null)
+					{
+						addToStock(grabbed.getID());
+						grabbed.release();
+						grabbed = null;
+					}
+					openBook();
+				}
 			}
 			else
 			{
@@ -237,7 +316,7 @@ public class GamePanel extends JPanel {
 					GridElement.getGList().remove(h.getElement());
 					grabbed.lock(h);
 					grabbed = new GrabElement(this, t, mx-Element.w/2, my-Element.h/2);
-					GridElement.checkNeighborsOfGridElements();
+					//GridElement.checkNeighborsOfGridElements();
 				}
 				else if(my>=704 && my<=768)
 				{
@@ -278,6 +357,16 @@ public class GamePanel extends JPanel {
 						grabbed = null;
 					}
 				}
+				else if(mx>x-64 && my<64)
+				{
+					if(grabbed!=null)
+					{
+						addToStock(grabbed.getID());
+						grabbed.release();
+						grabbed = null;
+					}
+					openBook();
+				}
 				else
 				{
 					addToStock(grabbed.getID());
@@ -286,19 +375,92 @@ public class GamePanel extends JPanel {
 				}
 			}
 		}
+		else if(Window == 0 ) // PAUSED
+		{
+			if(mx>x-64 && my<64)
+			{
+				if(grabbed!=null)
+				{
+					addToStock(grabbed.getID());
+					grabbed.release();
+					grabbed = null;
+				}
+				for(FixedElement f: bookList)
+				{
+					FixedElement.getFList().remove(f);
+				}
+				bookList.clear();
+				bookOpen = false;
+				paused = false;
+			}
+		}
 		else if(Window==1)
 		{
+			if(cGrabbed == null)
+			{
+				for(IComponent c: IComponent.getList())
+				{
+					int[] p = c.getPos();
+					if(mx>=p[0] && mx<=p[0]+c.getWidth() && my>=p[1] && my<= p[1]+c.getHeight())
+					{
+						cGrabbed = c;
+						c.setGrabbed();
+						break;
+					}
+				}
+			}
+			else
+			{
+				cGrabbed.release();
+				cGrabbed = null;
+			}
 			if(mx>=100&&mx<=200&&my>=100&&my<=200)
 			{
 				Random rand = new Random();
-				int id = rand.nextInt(1, 7);
-				addToStock(id);
+				int id = rand.nextInt(1, 4);
+				new SComponent(id, rand.nextInt(32,1400),rand.nextInt(120,700));
 			}
 		}
-		else if(Window==2)
+		if(Window==0)
 		{
 			
 		}
+	}
+	
+	private IComponent cGrabbed = null;
+	
+	private ArrayList<FixedElement> bookList = new ArrayList<FixedElement>();
+	private void openBook()
+	{
+		bookOpen = true; // Cacau was herebbbbbb
+		paused = true;
+		
+		ArrayList<StockElement> list = StockElement.getStock();
+		
+		bookList.clear();
+		int x=this.x-1152, y = (this.y/2)-432;
+		
+		for(int i = 0; i<list.size(); i++)
+		{
+			int id = list.get(i).getID();
+			if(id>6)
+			{
+				FixedElement e = new FixedElement(id, x+656, (i-6)*80+y+144);
+				bookList.add(e);
+				int[] c = Combination.getRecipe(e.getID());
+				if(c != null)
+				{
+					bookList.add(new FixedElement(c[0], x+256, (i-6)*80+y+144));
+					bookList.add(new FixedElement(c[1], x+400, (i-6)*80+y+144));
+				}
+			}
+			else
+			{
+				FixedElement e = new FixedElement(id, x+256+(80*i), y+64);
+				bookList.add(e);
+			}
+		}
+		
 	}
 	
 	public void clicked(MouseEvent e)
@@ -306,7 +468,7 @@ public class GamePanel extends JPanel {
 		mx = e.getX();
 		my = e.getY();
 		
-		if(Window==0)
+		if(Window==0 && !paused)
 		{
 
 		}
@@ -314,7 +476,7 @@ public class GamePanel extends JPanel {
 		{
 			
 		}
-		else if(Window==2)
+		if(Window==0)
 		{
 			
 		}
@@ -360,7 +522,7 @@ public class GamePanel extends JPanel {
 		mx = e.getX();
 		my = e.getY();
 		
-		if(Window==0)
+		if(Window==0 && !paused)
 		{
 			if(my >= 704 && my<=768 && mx >= 160 && mx <= 288)
 			{
@@ -420,13 +582,13 @@ public class GamePanel extends JPanel {
 		{
 			
 		}
-		else if(Window==2)
+		if(Window==0)
 		{
 			
 		}
 	}
 	
-	private int Window = 0;
+	private int Window = 2;
 	
 	public void paintComponent(Graphics g)
 	{
@@ -437,10 +599,11 @@ public class GamePanel extends JPanel {
 		
 		if(Window==0)
 		{
-			g.fillRect(0, 0, 32, y/3);
+			g.fillRect(0, 0, 32, y/4);
 			g.setColor(new Color(234,214,182,255));
-			g.drawLine(0, y/3, 31, y/3);
-			g.drawLine(0, 2*y/3, 31, 2*y/3);
+			g.drawLine(0, y/4, 31, y/4);
+			g.drawLine(0, 3*y/4, 31, 3*y/4);
+			g.drawLine(0, 2*y/4, 31, 2*y/4);
 			
 			for(int i = 0; i<hexGrid.getHexGrid().length; i++)
 			{
@@ -464,8 +627,8 @@ public class GamePanel extends JPanel {
 			}
 			
 			g.setColor(new Color(39,31,25,255));
-			g.fillOval(64, 704, 64, 64);
-			g.fillOval(320, 704, 64, 64);
+			g.fillOval(64, 704, Element.w, Element.h);
+			g.fillOval(320, 704, Element.w, Element.h);
 			
 			if(canComb)
 				g.drawImage(sprites[1], 160, 704, null);
@@ -493,6 +656,15 @@ public class GamePanel extends JPanel {
 				{
 					g.drawImage(element.getUnknown(), element.getPos()[0], element.getPos()[1], Element.w, Element.h, null);
 				}
+
+			//Book Button
+			
+			if(bookOpen)
+			{
+				g.setColor(new Color(243,239,214,255));
+				g.fillRect((int)(x*0.4), (int)(y*0.05), (int)(x*0.6), (int)(y*0.85));
+			}
+			g.drawImage(sprites[2], x-64, 0, null);
 			
 			for(FixedElement element: FixedElement.getFList())
 				g.drawImage(element.getImg(), element.getPos()[0], element.getPos()[1], Element.w, Element.h, null);
@@ -500,10 +672,13 @@ public class GamePanel extends JPanel {
 			if(grabbed != null)
 				g.drawImage(grabbed.getImg(), grabbed.getPos()[0], grabbed.getPos()[1], Element.w, Element.h, null);
 			
+			/*Random r = new Random();
+			int min=-2, max=3;
+			
 			for(Integer[] c: GridElement.getConnections())
 			{
-				Random r = new Random();
-				int min=-2, max=3; // inclusive / exclusive
+				
+				 // inclusive / exclusive
 				
 				if(c[4] == 1)
 				{
@@ -527,27 +702,54 @@ public class GamePanel extends JPanel {
 					g.setColor(Color.gray);
 					g.drawLine(c[0]+r.nextInt(min, max), c[1]+r.nextInt(min, max), c[2]+r.nextInt(min, max), c[3]+r.nextInt(min, max));
 				}
-			}
+			}*/
 		}
 		else if(Window==1)
 		{
-			g.fillRect(0, y/3, 32, y/3);
+			g.fillRect(0, y/4, 32, y/4);
 			g.setColor(new Color(234,214,182,255));
-			g.drawLine(0, y/3, 31, y/3);
-			g.drawLine(0, 2*y/3, 31, 2*y/3);
+			g.drawLine(0, y/4, 31, y/4);
+			g.drawLine(0, 3*y/4, 31, 3*y/4);
+			g.drawLine(0, 2*y/4, 31, 2*y/4);
 			
 			g.setColor(Color.red);
 			g.fillRect(100, 100, 100, 100);
-		}
-		else if(Window==2)
-		{
-			g.drawImage(sprites[2], 0, 0, null);
-
-			g.fillRect(0, 2*y/3, 32, y/3);
-			g.setColor(new Color(234,214,182,255));
-			g.drawLine(0, y/3, 31, y/3);
-			g.drawLine(0, 2*y/3, 31, 2*y/3);
 			
+			for(IComponent c: IComponent.getList())
+			{
+				g.drawImage(c.getImg(), c.getPos()[0], c.getPos()[1], null);
+			}
 		}
+		if(Window==0)
+		{
+			g.fillRect(0, 2*y/4, 32, y/4);
+			g.setColor(new Color(234,214,182,255));
+			g.drawLine(0, y/4, 31, y/4);
+			g.drawLine(0, 3*y/4, 31, 3*y/4);
+			g.drawLine(0, 2*y/4, 31, 2*y/4);  
+			
+			g.setColor(Color.red);
+			g.fillRect(x/2, BHeight, MaxSpace, y/10);
+			g.setColor(Color.green);
+			g.fillRect(x/2+GSquare, BHeight, GWidth, y/10);
+			g.setColor(Color.white);
+			g.fillRect(x/2+WSquare, BHeight, WWidth, y/10);
+		}
+		else if(Window==3)
+		{
+			
+			g.drawImage(sprites[11], 0, 0, null);
+			
+			g.fillRect(0, 3*y/4, 32, y/4);
+			g.setColor(new Color(234,214,182,255));
+			g.drawLine(0, y/4, 31, y/4);
+			g.drawLine(0, 3*y/4, 31, 3*y/4);
+			g.drawLine(0, 2*y/4, 31, 2*y/4);
+		}
+		
 	}
+	
+	int GSquare = 0, WSquare = 0;
+	int MaxSpace = (int)(x*0.3), BHeight = (int)(y*0.8), WWidth = MaxSpace/20, GWidth = MaxSpace/5;
+	
 }

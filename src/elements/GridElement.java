@@ -169,10 +169,6 @@ public class GridElement extends Element {
 			{
 				break;
 			}
-			else
-			{
-				System.out.println("O: " + oEnergy + "C: " + cEnergy);
-			}
 		}
 		for(GridElement e: gridList)
 		{
