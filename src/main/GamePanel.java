@@ -149,7 +149,7 @@ public class GamePanel extends JPanel {
 		
 		int gridId = 0;
 		hexGrid = new Grid(gridId, (int)(0.4*x), (int)(0.1*y), (int)((Toolkit.getDefaultToolkit().getScreenSize().getHeight()/27)*Element.scale), this);
-		//GridElement.checkNeighborsOfGridElements();
+		GridElement.checkNeighborsOfGridElements();
 	}
 	
 	public void createNewGrid(int gridId)
@@ -189,7 +189,7 @@ public class GamePanel extends JPanel {
 				cGrabbed.updateToMouse(mx,my);
 			}
 		}
-		if(Window==0)
+		else if(Window==2)
 		{
 			if(SquareSide)
 			{
@@ -264,7 +264,7 @@ public class GamePanel extends JPanel {
 					GridElement.getGList().remove(h.getElement());
 					new GrabElement(this, h.getElement().getID(), mx-Element.w/2, my-Element.h/2);
 					h.setElement(null);
-					//GridElement.checkNeighborsOfGridElements();
+					GridElement.checkNeighborsOfGridElements();
 				}
 				for(StockElement sElement: StockElement.getStock())
 				{
@@ -316,7 +316,7 @@ public class GamePanel extends JPanel {
 					GridElement.getGList().remove(h.getElement());
 					grabbed.lock(h);
 					grabbed = new GrabElement(this, t, mx-Element.w/2, my-Element.h/2);
-					//GridElement.checkNeighborsOfGridElements();
+					GridElement.checkNeighborsOfGridElements();
 				}
 				else if(my>=704 && my<=768)
 				{
@@ -421,13 +421,30 @@ public class GamePanel extends JPanel {
 				new SComponent(id, rand.nextInt(32,1400),rand.nextInt(120,700));
 			}
 		}
-		if(Window==0)
+		else if(Window==2)
 		{
-			
+			MineTree();
 		}
 	}
 	
+	int Debug = 0;
 	private IComponent cGrabbed = null;
+	
+	private Boolean MineTree()
+	{
+		Random rand = new Random();
+		
+		if((WSquare>GSquare || WSquare+WWidth>GSquare) && WSquare<GSquare+GWidth)
+		{
+			GSquare = rand.nextInt(0,MaxSpace-GWidth);
+			Debug++;
+			return true;
+		}
+		
+		GSquare = rand.nextInt(0,MaxSpace-GWidth);
+		
+		return false;
+	}
 	
 	private ArrayList<FixedElement> bookList = new ArrayList<FixedElement>();
 	private void openBook()
@@ -454,11 +471,11 @@ public class GamePanel extends JPanel {
 					bookList.add(new FixedElement(c[1], x+400, (i-6)*80+y+144));
 				}
 			}
-			else
+			/*else
 			{
 				FixedElement e = new FixedElement(id, x+256+(80*i), y+64);
 				bookList.add(e);
-			}
+			}*/
 		}
 		
 	}
@@ -476,7 +493,7 @@ public class GamePanel extends JPanel {
 		{
 			
 		}
-		if(Window==0)
+		else if(Window==2)
 		{
 			
 		}
@@ -582,7 +599,7 @@ public class GamePanel extends JPanel {
 		{
 			
 		}
-		if(Window==0)
+		else if(Window==2)
 		{
 			
 		}
@@ -657,28 +674,11 @@ public class GamePanel extends JPanel {
 					g.drawImage(element.getUnknown(), element.getPos()[0], element.getPos()[1], Element.w, Element.h, null);
 				}
 
-			//Book Button
-			
-			if(bookOpen)
-			{
-				g.setColor(new Color(243,239,214,255));
-				g.fillRect((int)(x*0.4), (int)(y*0.05), (int)(x*0.6), (int)(y*0.85));
-			}
-			g.drawImage(sprites[2], x-64, 0, null);
-			
-			for(FixedElement element: FixedElement.getFList())
-				g.drawImage(element.getImg(), element.getPos()[0], element.getPos()[1], Element.w, Element.h, null);
-			
-			if(grabbed != null)
-				g.drawImage(grabbed.getImg(), grabbed.getPos()[0], grabbed.getPos()[1], Element.w, Element.h, null);
-			
-			/*Random r = new Random();
+			Random r = new Random();
 			int min=-2, max=3;
 			
 			for(Integer[] c: GridElement.getConnections())
 			{
-				
-				 // inclusive / exclusive
 				
 				if(c[4] == 1)
 				{
@@ -702,10 +702,27 @@ public class GamePanel extends JPanel {
 					g.setColor(Color.gray);
 					g.drawLine(c[0]+r.nextInt(min, max), c[1]+r.nextInt(min, max), c[2]+r.nextInt(min, max), c[3]+r.nextInt(min, max));
 				}
-			}*/
+			}
+			
+			//Book Button
+			
+			if(bookOpen)
+			{
+				g.setColor(new Color(243,239,214,255));
+				g.fillRect((int)(x*0.4), (int)(y*0.05), (int)(x*0.6), (int)(y*0.85));
+			}
+			g.drawImage(sprites[2], x-64, 0, null);
+			
+			for(FixedElement element: FixedElement.getFList())
+				g.drawImage(element.getImg(), element.getPos()[0], element.getPos()[1], Element.w, Element.h, null);
+			
+			if(grabbed != null)
+				g.drawImage(grabbed.getImg(), grabbed.getPos()[0], grabbed.getPos()[1], Element.w, Element.h, null);
+			
 		}
 		else if(Window==1)
 		{
+			g.setColor(new Color(88,67,50,255));
 			g.fillRect(0, y/4, 32, y/4);
 			g.setColor(new Color(234,214,182,255));
 			g.drawLine(0, y/4, 31, y/4);
@@ -720,8 +737,9 @@ public class GamePanel extends JPanel {
 				g.drawImage(c.getImg(), c.getPos()[0], c.getPos()[1], null);
 			}
 		}
-		if(Window==0)
+		else if(Window==2)
 		{
+			g.setColor(new Color(88,67,50,255));
 			g.fillRect(0, 2*y/4, 32, y/4);
 			g.setColor(new Color(234,214,182,255));
 			g.drawLine(0, y/4, 31, y/4);
@@ -739,7 +757,7 @@ public class GamePanel extends JPanel {
 		{
 			
 			g.drawImage(sprites[11], 0, 0, null);
-			
+			g.setColor(new Color(88,67,50,255));
 			g.fillRect(0, 3*y/4, 32, y/4);
 			g.setColor(new Color(234,214,182,255));
 			g.drawLine(0, y/4, 31, y/4);
@@ -750,6 +768,6 @@ public class GamePanel extends JPanel {
 	}
 	
 	int GSquare = 0, WSquare = 0;
-	int MaxSpace = (int)(x*0.3), BHeight = (int)(y*0.8), WWidth = MaxSpace/20, GWidth = MaxSpace/5;
+	int MaxSpace = (int)(x*0.3), BHeight = (int)(y*0.8), WWidth = MaxSpace/80, GWidth = MaxSpace/10;
 	
 }

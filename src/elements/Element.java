@@ -85,12 +85,34 @@ public abstract class Element {
 		InputStream is = getClass().getResourceAsStream(file);
 		
 		try {
-			img = ImageIO.read(is);
+			normal = ImageIO.read(is);
 			
 			int x = ID%8;
 			int y = ID/8;
-			unknown = img.getSubimage(0, 0, 64, 64);
-			img = img.getSubimage(x*64, y*64, 64, 64);
+			unknown = normal.getSubimage(0, 0, 64, 64);
+			normal = normal.getSubimage(x*64, y*64, 64, 64);
+			img = normal;
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		is = getClass().getResourceAsStream("/ElementsSpritesheetZero.png");
+		
+		try {
+			zero = ImageIO.read(is);
+			
+			int x = ID%8;
+			int y = ID/8;
+			
+			zero = zero.getSubimage(x*64, y*64, 64, 64);
 			
 		} catch (IOException e) {
 			
@@ -104,7 +126,7 @@ public abstract class Element {
 		}
 	}
 	
-	private BufferedImage unknown;
+	private BufferedImage unknown, normal, zero;
 	
 	public BufferedImage getUnknown()
 	{
@@ -114,5 +136,17 @@ public abstract class Element {
 	public BufferedImage getImg()
 	{
 		return img;
+	}
+	
+	public void setState(int s)
+	{
+		if(s==0)
+		{
+			img = zero;
+		}
+		else
+		{
+			img = normal;
+		}
 	}
 }

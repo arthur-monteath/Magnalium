@@ -132,7 +132,111 @@ public class GridElement extends Element {
 	}
 	
 	private static ArrayList<GridElement> gridList = new ArrayList<GridElement>();
+	private static int[][] checked;
 	
+	public Hexagon getHex()
+	{
+		return gamePanel.getGrid().getClosestHex(getPos()[0]+w/2, getPos()[1]+h/2);
+	}
+	
+	private void search(int[] index)
+	{	
+		int i = index[0];
+		int j = index[1];
+		
+		if(checked[i][j] != 0)
+			return;
+		
+		checked[i][j] = 1;
+		Hexagon[][] grid = gamePanel.getGrid().getHexGrid();
+		
+		getHex().colorToWhite();
+		
+		if(i%2!=0)
+		{
+			GridElement[] nbl = new GridElement[6];
+			
+			nbl[0] = i+1 < grid.length				&& grid[i+1][j] != null ? grid[i+1][j].getElement() : null;
+			nbl[1] = i-1 >= 0 						&& grid[i-1][j] != null ? grid[i-1][j].getElement() : null;
+			nbl[2] = i+1 < grid.length && j-1 >= 0  && grid[i+1][j-1] != null ? grid[i+1][j-1].getElement() : null;
+			nbl[3] = i-1 >= 0 && j-1 >= 0 			&& grid[i-1][j-1] != null ? grid[i-1][j-1].getElement() : null;
+			nbl[4] = j+1 < grid[0].length 			&& grid[i][j+1] != null ? grid[i][j+1].getElement() : null;
+			nbl[5] = j-1 >= 0 						&& grid[i][j-1] != null ? grid[i][j-1].getElement() : null;
+			
+			for(GridElement k: nbl)
+			{
+				if(k!=null)
+				{
+					search(k.getIndex());
+				}
+			}
+		}
+		else
+		{
+			GridElement[] nbl = new GridElement[6];
+			
+			nbl[0] = i+1 < grid.length 							&& grid[i+1][j] != null ? grid[i+1][j].getElement() : null;
+			nbl[1] = i-1 >= 0 									&& grid[i-1][j] != null ? grid[i-1][j].getElement() : null;
+			nbl[2] = i+1 < grid.length && j+1 < grid[0].length  && grid[i+1][j+1] != null ? grid[i+1][j+1].getElement() : null;
+			nbl[3] = i-1 >= 0 && j+1 < grid[0].length 			&& grid[i-1][j+1] != null ? grid[i-1][j+1].getElement() : null;
+			nbl[4] = j+1 < grid[0].length 						&& grid[i][j+1] != null ? grid[i][j+1].getElement() : null;
+			nbl[5] = j-1 >= 0 									&& grid[i][j-1] != null ? grid[i][j-1].getElement() : null;
+			
+			for(GridElement k: nbl)
+			{
+				if(k!=null)
+				{
+					search(k.getIndex());
+				}
+			}
+		}
+	}
+	
+	public static void inDevelopment()
+	{
+		boolean abe = true;
+		connections.clear();
+		checked = new int[gamePanel.getGrid().getHexGrid().length][gamePanel.getGrid().getHexGrid()[0].length];	
+		
+		for(int i = 0; i<checked.length; i++)
+		{
+			for(int j = 0; j<checked[0].length; j++)
+			{
+				checked[i][j] = 0;
+			}
+		}
+		
+		for(GridElement e: gridList)
+		{
+			e.energized = e.bEnergized;
+		}
+		
+		for(GridElement e: gridList)
+		{
+			if(e.bEnergized)
+			{
+				//e.search(e.getIndex());
+			}
+		}
+		
+		/*for(GridElement e: gridList)
+		{
+			if(!e.getEnergized())
+			{
+				e.setImg("/ElementsSpritesheetZero.png");
+			}
+			else
+			{
+				e.setImg("/ElementsSpritesheet.png");
+			}
+		}*/
+		
+		/*if(abe)
+		{
+			gamePanel.createNewGrid(1);
+		}*/
+	}
+
 	public static void checkNeighborsOfGridElements()
 	{
 		boolean abe = true;
@@ -174,11 +278,11 @@ public class GridElement extends Element {
 		{
 			if(!e.getEnergized())
 			{
-				e.setImg("/ElementsSpritesheetZero.png");
+				e.setState(0);
 			}
 			else
 			{
-				e.setImg("/ElementsSpritesheet.png");
+				e.setState(1);
 			}
 		}
 		
@@ -187,7 +291,7 @@ public class GridElement extends Element {
 			gamePanel.createNewGrid(1);
 		}
 	}
-
+	
 	public static ArrayList<GridElement> getGList() {
 		return gridList;
 	}
