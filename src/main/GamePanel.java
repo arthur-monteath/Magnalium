@@ -35,6 +35,8 @@ public class GamePanel extends JPanel {
 	
 	private boolean paused = false, bookOpen = false;
 	
+	private Random r = new Random();
+	
 	public GamePanel()
 	{
 		mouseInput = new MouseInput(this);
@@ -193,18 +195,20 @@ public class GamePanel extends JPanel {
 		{
 			if(SquareSide)
 			{
-				WSquare+=2;
+				WSquare+=WSpd;
 				if(WSquare >= MaxSpace-WWidth)
 				{
 					SquareSide = false;
+					WSquare = MaxSpace-WWidth;
 				}
 			}
 			else
 			{
-				WSquare-=2;
+				WSquare-=WSpd;
 				if(WSquare <= 0)
 				{
 					SquareSide = true;
+					WSquare = 0;
 				}
 			}
 		}
@@ -416,9 +420,8 @@ public class GamePanel extends JPanel {
 			}
 			if(mx>=100&&mx<=200&&my>=100&&my<=200)
 			{
-				Random rand = new Random();
-				int id = rand.nextInt(1, 4);
-				new SComponent(id, rand.nextInt(32,1400),rand.nextInt(120,700));
+				int id = r.nextInt(1, 4);
+				new SComponent(id, r.nextInt(32,1400),r.nextInt(120,700));
 			}
 		}
 		else if(Window==2)
@@ -431,17 +434,22 @@ public class GamePanel extends JPanel {
 	private IComponent cGrabbed = null;
 	
 	private Boolean MineTree()
-	{
-		Random rand = new Random();
-		
-		if((WSquare>GSquare || WSquare+WWidth>GSquare) && WSquare<GSquare+GWidth)
+	{	
+		int i = 0;
+		for(int GSquare: GSquare)
 		{
-			GSquare = rand.nextInt(0,MaxSpace-GWidth);
-			Debug++;
-			return true;
-		}
+			if((WSquare>GSquare || WSquare+WWidth>GSquare) && WSquare<GSquare+GWidth[i])
+			{
+				GWidth[i] = (int) (GOWidth*r.nextDouble(0.2,1.9));
+				this.GSquare[i] = r.nextInt(0,MaxSpace-GWidth[i]);
+				Debug++;
+				return true;
+			}
+			
+			i++;
 		
-		GSquare = rand.nextInt(0,MaxSpace-GWidth);
+			//GSquare = r.nextInt(0,MaxSpace-GWidth[i]);
+		}
 		
 		return false;
 	}
@@ -674,7 +682,6 @@ public class GamePanel extends JPanel {
 					g.drawImage(element.getUnknown(), element.getPos()[0], element.getPos()[1], Element.w, Element.h, null);
 				}
 
-			Random r = new Random();
 			int min=-2, max=3;
 			
 			for(Integer[] c: GridElement.getConnections())
@@ -749,9 +756,19 @@ public class GamePanel extends JPanel {
 			g.setColor(Color.red);
 			g.fillRect(x/2, BHeight, MaxSpace, y/10);
 			g.setColor(Color.green);
-			g.fillRect(x/2+GSquare, BHeight, GWidth, y/10);
+			
+			int i = 0;
+			for(int a: GSquare)
+			{
+				g.fillRect(x/2+a, BHeight, GWidth[i], y/10);
+				i++;
+			}
+			
 			g.setColor(Color.white);
 			g.fillRect(x/2+WSquare, BHeight, WWidth, y/10);
+			
+			g.setFont(new Font("/SimpleLife.ttf", Font.BOLD, 64));
+			g.drawString(Integer.toString(Debug), x/2, BHeight-10);
 		}
 		else if(Window==3)
 		{
@@ -767,7 +784,7 @@ public class GamePanel extends JPanel {
 		
 	}
 	
-	int GSquare = 0, WSquare = 0;
-	int MaxSpace = (int)(x*0.3), BHeight = (int)(y*0.8), WWidth = MaxSpace/80, GWidth = MaxSpace/10;
-	
+	int MaxSpace = (int)(x*0.3), BHeight = (int)(y*0.8), WWidth = MaxSpace/80, GOWidth = MaxSpace/40, WSpd = 4, WSquare = 0;
+	int[] GWidth = {GOWidth, GOWidth, GOWidth};
+	int[] GSquare = {0,  50, 150};
 }
