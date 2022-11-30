@@ -13,7 +13,7 @@ public class GameWindow {
 		frame = new JFrame();
 		
 		frame.setSize(Toolkit.getDefaultToolkit().getScreenSize());
-		
+		System.out.println(Toolkit.getDefaultToolkit().getScreenSize().getHeight());
 		frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
 		frame.add(gamePanel);
 		frame.setUndecorated(true);

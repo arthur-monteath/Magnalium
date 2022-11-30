@@ -25,8 +25,8 @@ public abstract class Element {
 	private BufferedImage img;
 	
 	private int x=0,y=0,ID=0;
-	public static final double scale = 1.25f;
-	public static final int w=(int) ((Toolkit.getDefaultToolkit().getScreenSize().getHeight()/16.875)*scale),h=(int) ((Toolkit.getDefaultToolkit().getScreenSize().getHeight()/16.875)*scale);
+	public static final double scale = 1;
+	public static final int w=(int) Math.floor((Toolkit.getDefaultToolkit().getScreenSize().getHeight()/16.875)*scale),h=(int) Math.floor((Toolkit.getDefaultToolkit().getScreenSize().getHeight()/16.875)*scale);
 	
 	
 	public static ArrayList<Integer> getList()

@@ -31,7 +31,10 @@ public class GamePanel extends JPanel {
 	private MouseInput mouseInput;
 	public int x=Toolkit.getDefaultToolkit().getScreenSize().width,y=Toolkit.getDefaultToolkit().getScreenSize().height;
 	
+	private final double gScale = (double)y/1080;
+	
 	private BufferedImage[] sprites = new BufferedImage[12];
+	private BufferedImage bg, bgF;
 	
 	private boolean paused = false, bookOpen = false;
 	
@@ -39,6 +42,7 @@ public class GamePanel extends JPanel {
 	
 	public GamePanel()
 	{
+		System.out.println(gScale);
 		mouseInput = new MouseInput(this);
 		addKeyListener(new KeyboardInput(this));
 		
@@ -122,6 +126,45 @@ public class GamePanel extends JPanel {
 		}
 		
 		sprites[11] = img;
+		
+		is = getClass().getResourceAsStream("/Magnalium1.png");
+		img = null;
+		
+		try {
+			img = ImageIO.read(is);
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		bg = img;
+		System.out.println(bg.getWidth()*gScale);
+		
+		is = getClass().getResourceAsStream("/MagnaliumF.png");
+		img = null;
+		
+		try {
+			img = ImageIO.read(is);
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		bgF = img;
 		
 		for(int i = 1; i<Element.primary.length; i++)
 		{
@@ -278,16 +321,16 @@ public class GamePanel extends JPanel {
 						sElement.increase(-1);
 					}
 				}
-				if(my>=704 && my<=768)
+				if(my>=928*gScale && my<=1008*gScale)
 				{
-					if(comb[0] != null && mx>=64 && mx<=128)
+					if(comb[0] != null && mx>=112*gScale && mx<=192*gScale)
 					{
 						grabbed = new GrabElement(this, comb[0].getID(), mx-Element.w/2, my-Element.h/2);
 						FixedElement.getFList().remove(comb[0]);
 						comb[0] = null;
 						canComb = comb[0] != null && comb[1] != null && Combination.getResult(comb[0].getID(), comb[1].getID()) > 0;
 					}
-					else if(comb[1] != null && mx>=320 && mx<=384)
+					else if(comb[1] != null && mx>=352*gScale && mx<=432*gScale)
 					{
 						grabbed = new GrabElement(this, comb[1].getID(), mx-Element.w/2, my-Element.h/2);
 						FixedElement.getFList().remove(comb[1]);
@@ -322,35 +365,35 @@ public class GamePanel extends JPanel {
 					grabbed = new GrabElement(this, t, mx-Element.w/2, my-Element.h/2);
 					GridElement.checkNeighborsOfGridElements();
 				}
-				else if(my>=704 && my<=768)
+				else if(my>=928*gScale && my<=1008*gScale)
 				{
-					if(comb[0] == null && mx>=64 && mx<=128)
+					if(comb[0] == null && mx>=112*gScale && mx<=192*gScale)
 					{
-						comb[0] = new FixedElement(grabbed.getID(), 64, 704);
+						comb[0] = new FixedElement(grabbed.getID(), (int)Math.ceil(120*gScale), (int)Math.ceil(936*gScale));
 						grabbed.release();
 						grabbed = null;
 						canComb = comb[0] != null && comb[1] != null && Combination.getResult(comb[0].getID(), comb[1].getID()) > 0;
 					}
-					else if(comb[1] == null && mx>=320 && mx<=384)
+					else if(comb[1] == null && mx>=352*gScale && mx<=432*gScale)
 					{
-						comb[1] = new FixedElement(grabbed.getID(), 320, 704);
+						comb[1] = new FixedElement(grabbed.getID(), (int)Math.ceil(360*gScale), (int)Math.ceil(936*gScale));
 						grabbed.release();
 						grabbed = null;
 						canComb = comb[0] != null && comb[1] != null && Combination.getResult(comb[0].getID(), comb[1].getID()) > 0;
 					}
-					else if(comb[0] != null && mx>=64 && mx<=128)
+					else if(comb[0] != null && mx>=112*gScale && mx<=192*gScale)
 					{
 						int t = comb[0].getID();
 						FixedElement.getFList().remove(comb[0]);
-						comb[0] = new FixedElement(grabbed.getID(), 64, 704);
+						comb[0] = new FixedElement(grabbed.getID(), (int)Math.ceil(120*gScale), (int)Math.ceil(936*gScale));
 						grabbed = new GrabElement(this, t, mx-Element.w/2, my-Element.h/2);
 						canComb = comb[0] != null && comb[1] != null && Combination.getResult(comb[0].getID(), comb[1].getID()) > 0;
 					}
-					else if(comb[1] != null && mx>=320 && mx<=384)
+					else if(comb[1] != null && mx>=352*gScale && mx<=432*gScale)
 					{
 						int t = comb[1].getID();
 						FixedElement.getFList().remove(comb[1]);
-						comb[1] = new FixedElement(grabbed.getID(), 320, 704);
+						comb[1] = new FixedElement(grabbed.getID(), (int)Math.ceil(360*gScale), (int)Math.ceil(936*gScale));
 						grabbed = new GrabElement(this, t, mx-Element.w/2, my-Element.h/2);
 						canComb = comb[0] != null && comb[1] != null && Combination.getResult(comb[0].getID(), comb[1].getID()) > 0;
 					}
@@ -440,7 +483,7 @@ public class GamePanel extends JPanel {
 		{
 			if((WSquare>GSquare || WSquare+WWidth>GSquare) && WSquare<GSquare+GWidth[i])
 			{
-				GWidth[i] = (int) (GOWidth*r.nextDouble(0.2,1.9));
+				GWidth[i] = (int) (GOWidth*r.nextDouble(0.8,1.3));
 				this.GSquare[i] = r.nextInt(0,MaxSpace-GWidth[i]);
 				Debug++;
 				return true;
@@ -524,19 +567,18 @@ public class GamePanel extends JPanel {
 	public static void resetElementsOnStock()
 	{
 		ArrayList<StockElement> list = StockElement.getStock();
+		int hMargin = Element.w*5/4, vMargin = Element.h*3/4;
 		
 		for(int i = 0; i<list.size(); i++)
 		{
-			i++;
-			if(i%5==0)
+			if(i%6==0)
 			{
-				list.get(i-1).setPos(Element.w*5,(i/5)*Element.w);
+				list.get(i).setPos(hMargin,(i/6)*Element.h + vMargin);
 			}
 			else
 			{
-				list.get(i-1).setPos(i%5*Element.w,((i+4)/5)*Element.w);
+				list.get(i).setPos(i%6*Element.w + hMargin,(i/6)*Element.h + vMargin);
 			}
-			i--;
 		}
 	}
 	
@@ -613,22 +655,23 @@ public class GamePanel extends JPanel {
 		}
 	}
 	
-	private int Window = 2;
+	private int Window = 0;
 	
 	public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g); // calls the JPanel's paint component method this is used to clean the surface
 		
-		g.setColor(new Color(88,67,50,255));
-		g.fillRect(32, 0, x-32, y);
+		//g.setColor(new Color(88,67,50,255));
+		//g.fillRect(32, 0, x-32, y);
 		
 		if(Window==0)
 		{
-			g.fillRect(0, 0, 32, y/4);
+			/*g.fillRect(0, 0, 32, y/4);
 			g.setColor(new Color(234,214,182,255));
 			g.drawLine(0, y/4, 31, y/4);
 			g.drawLine(0, 3*y/4, 31, 3*y/4);
-			g.drawLine(0, 2*y/4, 31, 2*y/4);
+			g.drawLine(0, 2*y/4, 31, 2*y/4);*/
+			g.drawImage(bg, 0, 0, (int)(bg.getWidth()*gScale), (int)(bg.getHeight()*gScale), null);
 			
 			for(int i = 0; i<hexGrid.getHexGrid().length; i++)
 			{
@@ -651,6 +694,7 @@ public class GamePanel extends JPanel {
 				}
 			}
 			
+			/*
 			g.setColor(new Color(39,31,25,255));
 			g.fillOval(64, 704, Element.w, Element.h);
 			g.fillOval(320, 704, Element.w, Element.h);
@@ -659,6 +703,7 @@ public class GamePanel extends JPanel {
 				g.drawImage(sprites[1], 160, 704, null);
 			else
 				g.drawImage(sprites[0], 160, 704, null);
+			*/
 
 			for(StockElement element: StockElement.getStock())
 			{
@@ -666,10 +711,10 @@ public class GamePanel extends JPanel {
 			}
 			
 			g.setColor(Color.white);
-			g.setFont(new Font("/SimpleLife.ttf", Font.BOLD, 16));
+			g.setFont(new Font("/SimpleLife.ttf", Font.BOLD, (int)(20*gScale)));
 			for(StockElement element: StockElement.getStock())
 			{
-				g.drawString(String.valueOf(element.getAmount()), element.getPos()[0]+(Element.w*7/8), element.getPos()[1]+(Element.h*11/12));
+				g.drawString(String.valueOf(element.getAmount()), element.getPos()[0]+(Element.w*7/8), element.getPos()[1]+(Element.h));
 			}
 			
 			for(GridElement element: GridElement.getGList())
@@ -746,7 +791,8 @@ public class GamePanel extends JPanel {
 		}
 		else if(Window==2)
 		{
-			g.setColor(new Color(88,67,50,255));
+			g.drawImage(bgF, 0, 0, (int)(bgF.getWidth()*gScale), (int)(bgF.getHeight()*gScale), null);
+			/*g.setColor(new Color(88,67,50,255));
 			g.fillRect(0, 2*y/4, 32, y/4);
 			g.setColor(new Color(234,214,182,255));
 			g.drawLine(0, y/4, 31, y/4);
@@ -768,23 +814,23 @@ public class GamePanel extends JPanel {
 			g.fillRect(x/2+WSquare, BHeight, WWidth, y/10);
 			
 			g.setFont(new Font("/SimpleLife.ttf", Font.BOLD, 64));
-			g.drawString(Integer.toString(Debug), x/2, BHeight-10);
+			g.drawString(Integer.toString(Debug), x/2, BHeight-10);*/
 		}
 		else if(Window==3)
 		{
 			
-			g.drawImage(sprites[11], 0, 0, null);
+			/*g.drawImage(sprites[11], 0, 0, null);
 			g.setColor(new Color(88,67,50,255));
 			g.fillRect(0, 3*y/4, 32, y/4);
 			g.setColor(new Color(234,214,182,255));
 			g.drawLine(0, y/4, 31, y/4);
 			g.drawLine(0, 3*y/4, 31, 3*y/4);
-			g.drawLine(0, 2*y/4, 31, 2*y/4);
+			g.drawLine(0, 2*y/4, 31, 2*y/4);*/
 		}
 		
 	}
 	
-	int MaxSpace = (int)(x*0.3), BHeight = (int)(y*0.8), WWidth = MaxSpace/80, GOWidth = MaxSpace/40, WSpd = 4, WSquare = 0;
+	int MaxSpace = (int)(x*0.3), BHeight = (int)(y*0.8), WWidth = MaxSpace/80, GOWidth = MaxSpace/10, WSpd = 2, WSquare = 0;
 	int[] GWidth = {GOWidth, GOWidth, GOWidth};
 	int[] GSquare = {0,  50, 150};
 }
