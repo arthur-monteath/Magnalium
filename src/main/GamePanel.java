@@ -2,11 +2,13 @@ package main;
 
 import input.*;
 import items.*;
+import physics.BoxCollider;
 import utils.*;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -29,7 +31,7 @@ import elements.StockElement;
 public class GamePanel extends JPanel {
 
 	private MouseInput mouseInput;
-	public int x=Toolkit.getDefaultToolkit().getScreenSize().width,y=Toolkit.getDefaultToolkit().getScreenSize().height;
+	public static final int x=Toolkit.getDefaultToolkit().getScreenSize().width,y=Toolkit.getDefaultToolkit().getScreenSize().height;
 	
 	private final double gScale = (double)y/1080;
 	
@@ -213,8 +215,17 @@ public class GamePanel extends JPanel {
 	private int mx=0, my=0;
 	GrabElement grabbed = null;
 	boolean SquareSide = true;
-	
+	BoxCollider bc = new BoxCollider(400,400,100,100);
+	double rot = 45;
 	public void updateGame() {
+		
+		bc.SetRotation((int)rot);
+		//rot+=0.1;
+		
+		for(BoxCollider c: BoxCollider.GetList())
+		{
+			c.ApplyGravity();
+		}
 		
 		if(Window==0 && !paused)
 		{
@@ -373,7 +384,7 @@ public class GamePanel extends JPanel {
 						grabbed.release();
 						grabbed = null;
 						canComb = comb[0] != null && comb[1] != null && Combination.getResult(comb[0].getID(), comb[1].getID()) > 0;
-					}
+					} 
 					else if(comb[1] == null && mx>=352*gScale && mx<=432*gScale)
 					{
 						comb[1] = new FixedElement(grabbed.getID(), (int)Math.ceil(360*gScale), (int)Math.ceil(936*gScale));
@@ -666,11 +677,6 @@ public class GamePanel extends JPanel {
 		
 		if(Window==0)
 		{
-			/*g.fillRect(0, 0, 32, y/4);
-			g.setColor(new Color(234,214,182,255));
-			g.drawLine(0, y/4, 31, y/4);
-			g.drawLine(0, 3*y/4, 31, 3*y/4);
-			g.drawLine(0, 2*y/4, 31, 2*y/4);*/
 			g.drawImage(bg, 0, 0, (int)(bg.getWidth()*gScale), (int)(bg.getHeight()*gScale), null);
 			
 			for(int i = 0; i<hexGrid.getHexGrid().length; i++)
@@ -791,8 +797,22 @@ public class GamePanel extends JPanel {
 		}
 		else if(Window==2)
 		{
+			g.setColor(Color.blue);
+			g.drawLine(200, y/2, 300, y/2-64);
+			g.drawLine(200, y/2, 300, y/2+64);
+			
+			g.setColor(Color.white);
+			
+			g.fillOval(200, y/2, 64, 64);
+			
+			g.fillOval(300, y/2-64, 64, 64);
+			g.fillOval(300, y/2+64, 64, 64);
+		}
+		else if(Window==3)
+		{
 			g.drawImage(bgF, 0, 0, (int)(bgF.getWidth()*gScale), (int)(bgF.getHeight()*gScale), null);
-			/*g.setColor(new Color(88,67,50,255));
+			
+			g.setColor(new Color(88,67,50,255));
 			g.fillRect(0, 2*y/4, 32, y/4);
 			g.setColor(new Color(234,214,182,255));
 			g.drawLine(0, y/4, 31, y/4);
@@ -814,9 +834,9 @@ public class GamePanel extends JPanel {
 			g.fillRect(x/2+WSquare, BHeight, WWidth, y/10);
 			
 			g.setFont(new Font("/SimpleLife.ttf", Font.BOLD, 64));
-			g.drawString(Integer.toString(Debug), x/2, BHeight-10);*/
+			g.drawString(Integer.toString(Debug), x/2, BHeight-10);
 		}
-		else if(Window==3)
+		else if(Window==4)
 		{
 			
 			/*g.drawImage(sprites[11], 0, 0, null);
@@ -828,6 +848,24 @@ public class GamePanel extends JPanel {
 			g.drawLine(0, 2*y/4, 31, 2*y/4);*/
 		}
 		
+		g.setColor(new Color(234,214,182,255));
+		g.drawLine(0, y/5, 31, y/5);
+		g.drawLine(0, 4*y/5, 31, 4*y/5);
+		g.drawLine(0, 3*y/5, 31, 3*y/5);
+		g.drawLine(0, 2*y/5, 31, 2*y/5);
+		
+		//g.setColor(Color.blue);
+		//g.drawLine(0, 864, x, 864);
+		//g.drawLine(0, 300, x, 300);
+		//g.drawLine(0, bc.GetY(), x, bc.GetY());
+		
+		/*for(BoxCollider bc: BoxCollider.GetList())
+		{
+			g.setColor(Color.white);
+			((Graphics2D) g).fill(bc.GetArea());
+			g.setColor(Color.red);
+			((Graphics2D) g).draw(bc.GetArea().getBounds2D());
+		}*/
 	}
 	
 	int MaxSpace = (int)(x*0.3), BHeight = (int)(y*0.8), WWidth = MaxSpace/80, GOWidth = MaxSpace/10, WSpd = 2, WSquare = 0;
