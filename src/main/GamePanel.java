@@ -2,13 +2,11 @@ package main;
 
 import input.*;
 import items.*;
-import physics.BoxCollider;
 import utils.*;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -30,17 +28,21 @@ import elements.StockElement;
 
 public class GamePanel extends JPanel {
 
+	private static final long serialVersionUID = 1L;
+	
 	private MouseInput mouseInput;
-	public static final int x=Toolkit.getDefaultToolkit().getScreenSize().width,y=Toolkit.getDefaultToolkit().getScreenSize().height;
+	public static int x=Toolkit.getDefaultToolkit().getScreenSize().width;
+	public static int y=Toolkit.getDefaultToolkit().getScreenSize().height;
 	
 	private final double gScale = (double)y/1080;
 	
 	private BufferedImage[] sprites = new BufferedImage[12];
-	private BufferedImage bg, bgF;
+	private BufferedImage WoodBg, UpperUI, forest;
 	
 	private boolean paused = false, bookOpen = false;
 	
 	private Random r = new Random();
+	private int zero = 0;
 	
 	public GamePanel()
 	{
@@ -50,7 +52,7 @@ public class GamePanel extends JPanel {
 		
 		addMouseListener(mouseInput);
 		addMouseMotionListener(mouseInput);
-		this.setBackground(new Color(40,37,33,255));
+		this.setBackground(new Color(0,0,0,255));
 		
 		InputStream is = getClass().getResourceAsStream("/Button.png");
 		BufferedImage img = null;
@@ -72,7 +74,7 @@ public class GamePanel extends JPanel {
 		sprites[0] = img.getSubimage(0, 0, 128, 64);
 		sprites[1] = img.getSubimage(128, 0, 128, 64);
 		
-		is = getClass().getResourceAsStream("/BookButton.png");
+		is = getClass().getResourceAsStream("/Icons.png");
 		img = null;
 		
 		try {
@@ -89,7 +91,7 @@ public class GamePanel extends JPanel {
 			}
 		}
 		
-		sprites[2] = img;
+		sprites[2] = img.getSubimage(128, 64, 64, 64);
 		
 		is = getClass().getResourceAsStream("/Book.png");
 		img = null;
@@ -129,7 +131,7 @@ public class GamePanel extends JPanel {
 		
 		sprites[11] = img;
 		
-		is = getClass().getResourceAsStream("/Magnalium1.png");
+		is = getClass().getResourceAsStream("/LowerUI.png");
 		img = null;
 		
 		try {
@@ -146,10 +148,10 @@ public class GamePanel extends JPanel {
 			}
 		}
 		
-		bg = img;
-		System.out.println(bg.getWidth()*gScale);
+		WoodBg = img;
+		System.out.println(WoodBg.getWidth()*gScale);
 		
-		is = getClass().getResourceAsStream("/MagnaliumF.png");
+		is = getClass().getResourceAsStream("/ForestFilled.png");
 		img = null;
 		
 		try {
@@ -166,7 +168,31 @@ public class GamePanel extends JPanel {
 			}
 		}
 		
-		bgF = img;
+		forest = img;
+		
+		is = getClass().getResourceAsStream("/UpperUI.png");
+		img = null;
+		
+		try {
+			img = ImageIO.read(is);
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		UpperUI = img;
+		
+		zero = (x/2)-(UpperUI.getWidth()/2);
+		
+		x = UpperUI.getWidth();
+		y = UpperUI.getHeight();
 		
 		for(int i = 1; i<Element.primary.length; i++)
 		{
@@ -215,17 +241,8 @@ public class GamePanel extends JPanel {
 	private int mx=0, my=0;
 	GrabElement grabbed = null;
 	boolean SquareSide = true;
-	BoxCollider bc = new BoxCollider(400,400,100,100);
-	double rot = 45;
+	
 	public void updateGame() {
-		
-		bc.SetRotation((int)rot);
-		//rot+=0.1;
-		
-		for(BoxCollider c: BoxCollider.GetList())
-		{
-			c.ApplyGravity();
-		}
 		
 		if(Window==0 && !paused)
 		{
@@ -517,7 +534,7 @@ public class GamePanel extends JPanel {
 		ArrayList<StockElement> list = StockElement.getStock();
 		
 		bookList.clear();
-		int x=this.x-1152, y = (this.y/2)-432;
+		int x=GamePanel.x-1152, y = (GamePanel.y/2)-432;
 		
 		for(int i = 0; i<list.size(); i++)
 		{
@@ -677,7 +694,7 @@ public class GamePanel extends JPanel {
 		
 		if(Window==0)
 		{
-			g.drawImage(bg, 0, 0, (int)(bg.getWidth()*gScale), (int)(bg.getHeight()*gScale), null);
+			g.drawImage(WoodBg, zero + (int)(544*gScale), (int)(32*gScale), (int)(WoodBg.getWidth()*gScale), (int)(WoodBg.getHeight()*gScale), null);
 			
 			for(int i = 0; i<hexGrid.getHexGrid().length; i++)
 			{
@@ -810,31 +827,27 @@ public class GamePanel extends JPanel {
 		}
 		else if(Window==3)
 		{
-			g.drawImage(bgF, 0, 0, (int)(bgF.getWidth()*gScale), (int)(bgF.getHeight()*gScale), null);
+			g.drawImage(forest, zero + (int)(544*gScale), (int)(32*gScale), (int)(forest.getWidth()*gScale), (int)(forest.getHeight()*gScale), null);
 			
 			g.setColor(new Color(88,67,50,255));
-			g.fillRect(0, 2*y/4, 32, y/4);
 			g.setColor(new Color(234,214,182,255));
-			g.drawLine(0, y/4, 31, y/4);
-			g.drawLine(0, 3*y/4, 31, 3*y/4);
-			g.drawLine(0, 2*y/4, 31, 2*y/4);  
 			
 			g.setColor(Color.red);
-			g.fillRect(x/2, BHeight, MaxSpace, y/10);
+			g.fillRect(zero + x/2, BHeight, MaxSpace, y/10);
 			g.setColor(Color.green);
 			
 			int i = 0;
 			for(int a: GSquare)
 			{
-				g.fillRect(x/2+a, BHeight, GWidth[i], y/10);
+				g.fillRect(zero + x/2+a, BHeight, GWidth[i], y/10);
 				i++;
 			}
 			
 			g.setColor(Color.white);
-			g.fillRect(x/2+WSquare, BHeight, WWidth, y/10);
+			g.fillRect(zero + x/2+WSquare, BHeight, WWidth, y/10);
 			
 			g.setFont(new Font("/SimpleLife.ttf", Font.BOLD, 64));
-			g.drawString(Integer.toString(Debug), x/2, BHeight-10);
+			g.drawString(Integer.toString(Debug), zero + x/2, BHeight-10);
 		}
 		else if(Window==4)
 		{
@@ -848,11 +861,13 @@ public class GamePanel extends JPanel {
 			g.drawLine(0, 2*y/4, 31, 2*y/4);*/
 		}
 		
+		/*
 		g.setColor(new Color(234,214,182,255));
 		g.drawLine(0, y/5, 31, y/5);
 		g.drawLine(0, 4*y/5, 31, 4*y/5);
 		g.drawLine(0, 3*y/5, 31, 3*y/5);
 		g.drawLine(0, 2*y/5, 31, 2*y/5);
+		*/
 		
 		//g.setColor(Color.blue);
 		//g.drawLine(0, 864, x, 864);
@@ -866,6 +881,25 @@ public class GamePanel extends JPanel {
 			g.setColor(Color.red);
 			((Graphics2D) g).draw(bc.GetArea().getBounds2D());
 		}*/
+		
+		/*int res = 5;
+		for(int x = zero + (int) (544*gScale); x < zero + (int)(1856*gScale); x+=res)
+		{
+			for(int y = (int) (32*gScale); y < (int)(1048*gScale); y+=res)
+			{
+				int col = (int)(Math.round(Math.random()*100)%50);
+				
+				if(Math.random() > 0.5)
+				{
+					col = 255-col;
+				}
+				
+				g.setColor(new Color(col, col, col));
+				g.fillRect(x, y, res, res);
+			}
+		}*/
+		
+		g.drawImage(UpperUI, zero, 0, (int)(UpperUI.getWidth()*gScale), (int)(UpperUI.getHeight()*gScale), null);
 	}
 	
 	int MaxSpace = (int)(x*0.3), BHeight = (int)(y*0.8), WWidth = MaxSpace/80, GOWidth = MaxSpace/10, WSpd = 2, WSquare = 0;
