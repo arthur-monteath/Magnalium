@@ -131,7 +131,7 @@ public class GamePanel extends JPanel {
 		
 		sprites[11] = img;
 		
-		is = getClass().getResourceAsStream("/LowerUI.png");
+		is = getClass().getResourceAsStream("/LowerUId.png");
 		img = null;
 		
 		try {
