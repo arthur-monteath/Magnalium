@@ -34,7 +34,7 @@ public class GamePanel extends JPanel {
 	public static int x=Toolkit.getDefaultToolkit().getScreenSize().width;
 	public static int y=Toolkit.getDefaultToolkit().getScreenSize().height;
 	
-	private final double gScale = (double)y/1080;
+	private final double gScale = (double)Toolkit.getDefaultToolkit().getScreenSize().height/1080;
 	
 	private BufferedImage[] sprites = new BufferedImage[12];
 	private BufferedImage WoodBg, UpperUI, forest;
@@ -189,7 +189,9 @@ public class GamePanel extends JPanel {
 		
 		UpperUI = img;
 		
-		zero = (x/2)-(UpperUI.getWidth()/2);
+		zero = (int)((x/2)-(UpperUI.getWidth()*gScale/2));
+		
+		System.out.println(zero);
 		
 		x = UpperUI.getWidth();
 		y = UpperUI.getHeight();
@@ -882,8 +884,8 @@ public class GamePanel extends JPanel {
 			((Graphics2D) g).draw(bc.GetArea().getBounds2D());
 		}*/
 		
-		/*int res = 5;
-		for(int x = zero + (int) (544*gScale); x < zero + (int)(1856*gScale); x+=res)
+		int res = 3;
+		/*for(int x = zero + (int) (544*gScale); x < zero + (int)(1856*gScale); x+=res)
 		{
 			for(int y = (int) (32*gScale); y < (int)(1048*gScale); y+=res)
 			{
