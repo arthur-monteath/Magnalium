@@ -884,8 +884,8 @@ public class GamePanel extends JPanel {
 			((Graphics2D) g).draw(bc.GetArea().getBounds2D());
 		}*/
 		
-		int res = 3;
-		/*for(int x = zero + (int) (544*gScale); x < zero + (int)(1856*gScale); x+=res)
+		/*int res = 5;
+		for(int x = zero + (int) (544*gScale); x < zero + (int)(1856*gScale); x+=res)
 		{
 			for(int y = (int) (32*gScale); y < (int)(1048*gScale); y+=res)
 			{
