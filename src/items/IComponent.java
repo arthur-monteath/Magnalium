@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
+import main.GamePanel;
 import utils.Utils;
 
 public abstract class IComponent {
@@ -16,7 +17,7 @@ private BufferedImage img;
 	
 	private int x=0,y=0,w=0,h=0,ID=0;
 	private int[] pos;
-	public static final double scale = 1.25f;
+	//public static final double scale = 1f;
 	
 	private static ArrayList<IComponent> components = new ArrayList<IComponent>();
 	
@@ -42,8 +43,8 @@ private BufferedImage img;
 		this.y = y;
 		int[] a = {x,y};
 		pos = a;
-		w=img.getWidth();
-		h=img.getHeight();
+		w=(int) (img.getWidth()*GamePanel.gScale);
+		h=(int) (img.getHeight()*GamePanel.gScale);
 		
 		components.add(this);
 	}
