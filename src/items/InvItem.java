@@ -8,17 +8,25 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
+import main.GamePanel;
+
 public class InvItem {
 	
 	private BufferedImage img;
 	
-	private static float scale;
+	private static float scale = 1.0f;
 	public static final int w=(int) Math.floor((Toolkit.getDefaultToolkit().getScreenSize().getHeight()/16.875)*scale),h=(int) Math.floor((Toolkit.getDefaultToolkit().getScreenSize().getHeight()/16.875)*scale);
 	
 	public static ArrayList<InvItem> list = new ArrayList<InvItem>();
 	
 	private int[] size = new int[2];
-	private int id,row,col;
+	private int id,row,col,x,y;
+	
+	public int[] getPos()
+	{
+		int[] a = {x,y};
+		return a;
+	}
 	
 	public int[] GetSlot()
 	{
@@ -39,6 +47,11 @@ public class InvItem {
 	public BufferedImage GetImg()
 	{
 		return img;
+	}
+	
+	public int getId()
+	{
+		return id;
 	}
 	
 	public int[] GetSize()
@@ -63,6 +76,9 @@ public class InvItem {
 		size[0] = Inventory.getSize(id)[0];
 		size[1] = Inventory.getSize(id)[1];
 		
+		x = GamePanel.getMargin()[0]+(int)(col*64*GamePanel.gScale);
+		y = GamePanel.getMargin()[1]+(int)(row*64*GamePanel.gScale);
+		
 		list.add(this);
 	}
 	
@@ -83,5 +99,11 @@ public class InvItem {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public void setPos(int x, int y)
+	{
+		this.x = x;
+		this.y = y;
 	}
 }

@@ -31,8 +31,14 @@ public class Inventory {
 		{
 			for(int j = 0; j<inventory[0].length; j++)
 			{
-				if(inventory[i][j] == 0)
+				if(inventory[i][j] == id)
 				{
+					itemAmounts[id]++;
+					
+					return;
+				}
+				else if(inventory[i][j] == 0)
+				{		
 					if(checkSlot(i, j, itemSizes[id]))
 					{
 						new InvItem(id, i, j);
@@ -44,6 +50,8 @@ public class Inventory {
 								inventory[r+i][c+j] = id;
 							}
 						}
+						
+						itemAmounts[id]++;
 						
 						return;
 					}
