@@ -8,8 +8,6 @@ import utils.Hexagon;
 
 public class FixedElement extends Element {
 	
-	public static final int w=64,h=64;
-	
 	public FixedElement(int id, int x, int y) {
 		super(id);
 

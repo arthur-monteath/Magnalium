@@ -3,6 +3,7 @@ package main;
 import input.*;
 import items.*;
 import recipes.Recipe;
+import recipes.RecipesGrimoire;
 import recipes.WoodSword;
 import store.Button;
 import store.Currency;
@@ -27,10 +28,12 @@ import javax.swing.JPanel;
 
 import elements.Combination;
 import elements.Element;
+import elements.ElementsManuscript;
 import elements.FixedElement;
 import elements.GrabElement;
 import elements.Grid;
 import elements.GridElement;
+import elements.ManuscriptElement;
 import elements.StockElement;
 
 public class GamePanel extends JPanel {
@@ -54,6 +57,8 @@ public class GamePanel extends JPanel {
 	private BufferedImage[] Icons = new BufferedImage[6];
 	
 	private Store store;
+	private ElementsManuscript manuscript;
+	private RecipesGrimoire grimoire;
 	
 	public GamePanel()
 	{
@@ -275,7 +280,7 @@ public class GamePanel extends JPanel {
 		
 		for(int i = 1; i<Element.primary.length; i++)
 		{
-			for(int j = 0; j<99; j++)
+			for(int j = 0; j<12; j++)
 			{
 				addToStock(i);
 			}
@@ -301,8 +306,16 @@ public class GamePanel extends JPanel {
 		
 		store = new Store();
 		
-		int gridId = 0;
-		hexGrid = new Grid(gridId, (int)(0.4*x), (int)(0.1*y), (int)((Toolkit.getDefaultToolkit().getScreenSize().getHeight()/27)*Element.scale), this);
+		manuscript = new ElementsManuscript();
+		grimoire = new RecipesGrimoire();
+		
+		int gridId = 2;
+		
+		int hRadius = (int)((Toolkit.getDefaultToolkit().getScreenSize().getHeight()/27)*Element.scale);
+		
+		int[] size = Research.getSizeOfGrid(gridId, hRadius);
+		
+		hexGrid = new Grid(gridId, (int)((gScale*583) + (938*gScale/2) - (size[0]/2)) + (int)(hRadius*(1+Math.ceil(Research.getList().get(gridId).getGrid()[0].length/2.0))/2), (int)((gScale*71) + (938*gScale/2) - (size[1]/2)) + (int)(Math.cos(Math.toRadians(30.0))*hRadius), hRadius, this);
 		GridElement.checkNeighborsOfGridElements();
 	}
 	
@@ -318,8 +331,12 @@ public class GamePanel extends JPanel {
 	
 	public void createNewGrid(int gridId)
 	{
+		int hRadius = (int)((Toolkit.getDefaultToolkit().getScreenSize().getHeight()/27)*Element.scale);
+		
+		int[] size = Research.getSizeOfGrid(gridId, hRadius);
+		
 		GridElement.getGList().clear();
-		hexGrid = new Grid(gridId, (int)(0.4*x), (int)(0.1*y), 40, this);
+		hexGrid = new Grid(gridId, (int)((gScale*583) + (938*gScale/2) - (size[0]/2)) + (int)(hRadius*(1+Math.ceil(Research.getList().get(gridId).getGrid()[0].length/2.0))/2), (int)((gScale*71) + (938*gScale/2) - (size[1]/2)) + (int)(Math.cos(Math.toRadians(30.0))*hRadius), hRadius, this);
 		GridElement.checkNeighborsOfGridElements();
 	}
 	
@@ -341,6 +358,11 @@ public class GamePanel extends JPanel {
 		{
 			grabbed.updateToMouse(mx,my);
 		}
+		
+		if(GrabbedItem.getGrabbed() != null)
+		{
+			GrabbedItem.getGrabbed().updateToMouse(mx,my);
+		}
 	}
 	
 	public void updateGame() {
@@ -348,6 +370,9 @@ public class GamePanel extends JPanel {
 		if(Window==0 && !paused)
 		{
 			grabbedToMouse();
+			
+			manuscript.updateGrab(mx, my);
+			grimoire.updateGrab(mx, my);
 		}
 		else if(Window==1)
 		{
@@ -356,13 +381,6 @@ public class GamePanel extends JPanel {
 		else if(Window==2)
 		{
 			grabbedToMouse();
-			
-			/*cGrabbed = IComponent.getGrabbed();
-			
-			if(cGrabbed!=null)
-			{
-				cGrabbed.updateToMouse(mx,my);
-			}*/
 		}
 		else if(Window==3)
 		{
@@ -389,6 +407,7 @@ public class GamePanel extends JPanel {
 			
 			UpdatesWithEffect--;
 			woodAlpha = woodAlpha >= 0.0025 ? woodAlpha - 0.0025f : 0;
+			stoneAlpha = stoneAlpha >= 0.0025 ? stoneAlpha - 0.0025f : 0;
 		}
 		else if(Window==4)
 		{
@@ -546,6 +565,42 @@ public class GamePanel extends JPanel {
 		}
 	}
 	
+	private void grabbedItemsLogic()
+	{
+		if(GrabbedItem.getGrabbed() == null)
+		{
+			if(mx>=zero+(int)(64*gScale) && mx<=zero+(int)(480*gScale) && my>=(int)(112*gScale) && my<=(int)(880*gScale))
+			{
+				int[] clickedSlot = {(int)((my-(int)(112*gScale))/(64*gScale)), (int)((mx-zero-(int)(80*gScale))/(64*gScale))};
+				
+				System.out.println("Row: " + clickedSlot[0] + "  Col: " + clickedSlot[1]);
+				
+				int id = Inventory.getInv() [clickedSlot[0]] [clickedSlot[1]];
+				
+				if(Inventory.removeItem(id))
+				{
+					for(InvItem item: InvItem.GetList())
+					{
+						if(item.getId() == id)
+						{
+							new GrabbedItem(item);
+							
+							break;
+						}
+					}
+				}
+			}
+			else
+			{
+				
+			}
+		}
+		else
+		{
+			GrabbedItem.release();
+		}
+	}
+	
 	public void pressed(MouseEvent e)
 	{
 		mx = e.getX();
@@ -555,6 +610,8 @@ public class GamePanel extends JPanel {
 		{
 			if(my<=444*gScale)
 			{
+				manuscript.setPos((int) (1560*gScale), (int) (71*gScale));
+				grimoire.setPos((int) (1560*gScale), (int) (432*gScale));
 				Window = 0;
 			}
 			else if(my<=508*gScale)
@@ -590,6 +647,28 @@ public class GamePanel extends JPanel {
 		{
 			if(!InvMode)
 				grabbedElementsLogic();
+			else
+				grabbedItemsLogic();
+			
+			if(mx>=grimoire.getPos()[0] && mx<=grimoire.getPos()[0]+grimoire.getWidth() && my>=grimoire.getPos()[1] && my<=grimoire.getPos()[1]+grimoire.getHeight())
+			{
+				if(mx>=grimoire.getPos()[0]+448*gScale && my>=grimoire.getPos()[1]+448*gScale)
+				{
+					grimoire.openBook();
+				}
+				else
+					grimoire.grabbed(mx, my);
+			}
+			else if(mx>=manuscript.getPos()[0] && mx<=manuscript.getPos()[0]+manuscript.getWidth() && my>=manuscript.getPos()[1] && my<=manuscript.getPos()[1]+manuscript.getHeight())
+			{
+				if(mx>=manuscript.getPos()[0]+448*gScale && my>=manuscript.getPos()[1]+448*gScale)
+				{
+					openBook();
+					//manuscript.openBook();
+				}
+				else
+					manuscript.grabbed(mx, my);
+			}
 		}
 		else if(Window == 0) // PAUSED
 		{
@@ -601,11 +680,7 @@ public class GamePanel extends JPanel {
 					grabbed.release();
 					grabbed = null;
 				}
-				for(FixedElement f: bookList)
-				{
-					FixedElement.getFList().remove(f);
-				}
-				bookList.clear();
+				
 				bookOpen = false;
 				paused = false;
 			}
@@ -627,40 +702,22 @@ public class GamePanel extends JPanel {
 			
 			if(!InvMode)
 				grabbedElementsLogic();
+			else
+				grabbedItemsLogic();
 		}
 		else if(Window==2)
 		{
 			if(!InvMode)
 				grabbedElementsLogic();
-			
-			if(cGrabbed == null)
-			{
-				for(IComponent c: IComponent.getList())
-				{
-					int[] p = c.getPos();
-					if(mx>=p[0] && mx<=p[0]+c.getWidth() && my>=p[1] && my<= p[1]+c.getHeight())
-					{
-						cGrabbed = c;
-						c.setGrabbed();
-						break;
-					}
-				}
-			}
 			else
-			{
-				cGrabbed.release();
-				cGrabbed = null;
-			}
-			if(mx>=100&&mx<=200&&my>=100&&my<=200)
-			{
-				int id = r.nextInt(1, 4);
-				new SComponent(id, r.nextInt(32,1400),r.nextInt(120,700));
-			}
+				grabbedItemsLogic();
 		}
 		else if(Window==3)
 		{
 			if(!InvMode)
 				grabbedElementsLogic();
+			else
+				grabbedItemsLogic();
 			
 			if(forestToggle && MineBarCollides() && UpdatesWithEffect <= 0)
 			{
@@ -693,6 +750,13 @@ public class GamePanel extends JPanel {
 				TreeProgress = 0;
 				StoneProgress = 0;
 			}
+		}
+		else if(Window==4)
+		{
+			if(!InvMode)
+				grabbedElementsLogic();
+			else
+				grabbedItemsLogic();
 		}
 	}
 	
@@ -742,39 +806,14 @@ public class GamePanel extends JPanel {
 		return false;
 	}
 	
-	private ArrayList<FixedElement> bookList = new ArrayList<FixedElement>();
-	
 	private void openBook()
 	{
 		bookOpen = true; // Cacau was here
 		paused = true;
 		
-		ArrayList<StockElement> list = StockElement.getStock();
-		
-		bookList.clear();
 		int x=GamePanel.x-1152, y = (GamePanel.y/2)-432;
 		
-		for(int i = 0; i<list.size(); i++)
-		{
-			int id = list.get(i).getID();
-			if(id>6)
-			{
-				FixedElement e = new FixedElement(id, x+656, (i-6)*80+y+144);
-				bookList.add(e);
-				int[] c = Combination.getRecipe(e.getID());
-				if(c != null)
-				{
-					bookList.add(new FixedElement(c[0], x+256, (i-6)*80+y+144));
-					bookList.add(new FixedElement(c[1], x+400, (i-6)*80+y+144));
-				}
-			}
-			/*else
-			{
-				FixedElement e = new FixedElement(id, x+256+(80*i), y+64);
-				bookList.add(e);
-			}*/
-		}
-		
+		manuscript.openBook();
 	}
 	
 	public void clicked(MouseEvent e)
@@ -897,6 +936,11 @@ public class GamePanel extends JPanel {
 					}
 				}
 			}
+			else
+			{
+				manuscript.release();
+				grimoire.release();
+			}
 		}
 		else if(Window==1)
 		{
@@ -921,6 +965,9 @@ public class GamePanel extends JPanel {
 		if(Window==0)
 		{
 			g.drawImage(WoodBg, zero + (int)(544*gScale), (int)(32*gScale), (int)(WoodBg.getWidth()*gScale), (int)(WoodBg.getHeight()*gScale), null);
+			
+			g.setColor(new Color(218, 177, 113, 255));
+			g.fillRect((int)(gScale*583), (int)(gScale*71), (int)(gScale*938), (int)(gScale*938));
 			
 			for(int i = 0; i<hexGrid.getHexGrid().length; i++)
 			{
@@ -979,12 +1026,27 @@ public class GamePanel extends JPanel {
 				}
 			}
 			
+			g.setColor(Color.blue);
+			g.fillRect(manuscript.getPos()[0], manuscript.getPos()[1], manuscript.getWidth(), manuscript.getHeight());
+			g.setColor(new Color(243,239,214,255));
+			g.fillRect((int)(manuscript.getPos()[0]+448*gScale), (int)(manuscript.getPos()[1]+448*gScale), (int)(128*gScale), (int)(128*gScale));
+			
+			g.setColor(Color.orange);
+			g.fillRect(grimoire.getPos()[0], grimoire.getPos()[1], grimoire.getWidth(), grimoire.getHeight());
+			g.setColor(new Color(243,239,214,255));
+			g.fillRect((int)(grimoire.getPos()[0]+448*gScale), (int)(grimoire.getPos()[1]+448*gScale), (int)(128*gScale), (int)(128*gScale));
+			
 			DrawUpperBg(g);
 			
 			if(bookOpen)
 			{
 				g.setColor(new Color(243,239,214,255));
 				g.fillRect((int)(x*0.4), (int)(y*0.05), (int)(x*0.6), (int)(y*0.85));
+				
+				for(ManuscriptElement element: ManuscriptElement.getBList())
+				{
+					g.drawImage(element.getImg(), element.getPos()[0], element.getPos()[1], Element.w, Element.h, null);
+				}
 			}
 			
 			g.drawImage(Icons[5], (int)(x-Icons[5].getWidth()*gScale), 0, (int)(Icons[5].getWidth()*gScale), (int)(Icons[5].getHeight()*gScale), null);
@@ -1001,7 +1063,7 @@ public class GamePanel extends JPanel {
 				g.drawImage(sprites[1], 160, 704, null);
 			else
 				g.drawImage(sprites[0], 160, 704, null);
-			*/		
+			*/
 		}
 		else if(Window==1)
 		{
@@ -1286,8 +1348,14 @@ public class GamePanel extends JPanel {
 		
 		for(InvItem item: InvItem.GetList())
 		{
-			g.drawImage(item.GetImg(), hMargin+(int)(item.GetSlot()[1]*64*gScale), vMargin+(int)(item.GetSlot()[0]*64*gScale), (int)(item.GetSize()[0]*64*gScale), (int)(item.GetSize()[1]*64*gScale), null);
+			g.drawImage(item.GetImg(), hMargin+(int)(item.GetSlot()[1]*64*gScale), vMargin+(int)(item.GetSlot()[0]*64*gScale), item.GetWidth(), item.GetHeight(), null);
 			g.drawString(String.valueOf(Inventory.getAmount(item.getId())), item.getPos()[0]+(InvItem.w*item.GetSize()[0]*(8-String.valueOf(Inventory.getAmount(item.getId())).length())/8), item.getPos()[1]+(InvItem.h*item.GetSize()[1]));
+		}
+		
+		GrabbedItem grabbed = GrabbedItem.getGrabbed();
+		if(grabbed != null)
+		{
+			g.drawImage(grabbed.getItem().GetImg(), grabbed.getPos()[0], grabbed.getPos()[1], grabbed.getWidth(), grabbed.getHeight(), null);
 		}
 	}
 }
