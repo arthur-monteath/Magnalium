@@ -16,7 +16,7 @@ public class Book
 		double gScale = GamePanel.gScale;
 		
 		this.x = (int) (GamePanel.getZero() + x*gScale);
-		this.y = (int) (GamePanel.getZero() + y*gScale);
+		this.y = (int) (y*gScale);
 		w = (int) (576*gScale);
 		h = (int) (576*gScale);
 	}

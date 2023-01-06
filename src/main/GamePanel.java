@@ -47,9 +47,9 @@ public class GamePanel extends JPanel {
 	public final static double gScale = (double)Toolkit.getDefaultToolkit().getScreenSize().height/1080;
 	
 	private BufferedImage[] sprites = new BufferedImage[12];
-	private BufferedImage WoodBg, UpperUI, forest, cave, Wood,Stone;
+	private BufferedImage WoodBg, UpperUI, forest, cave, Wood, Stone, vellum, manuscriptImg, grimoireImg, manuscriptOpenImg, grimoireOpenImg;
 	
-	private boolean paused = false, bookOpen = false, InvMode = false;
+	private boolean grimoireOpen = false, manuscriptOpen = false, InvMode = false;
 	
 	private Random r = new Random();
 	private static int zero = 0, gZero = 0;
@@ -59,17 +59,10 @@ public class GamePanel extends JPanel {
 	private Store store;
 	private ElementsManuscript manuscript;
 	private RecipesGrimoire grimoire;
+	Recipe recipe;
 	
-	public GamePanel()
+	private void loadImages()
 	{
-		System.out.println(gScale);
-		mouseInput = new MouseInput(this);
-		addKeyListener(new KeyboardInput(this));
-		
-		addMouseListener(mouseInput);
-		addMouseMotionListener(mouseInput);
-		this.setBackground(new Color(0,0,0,255));
-		
 		InputStream is = getClass().getResourceAsStream("/Button.png");
 		BufferedImage img = null;
 		
@@ -267,6 +260,114 @@ public class GamePanel extends JPanel {
 		
 		Stone = img;
 		
+		is = getClass().getResourceAsStream("/vellum.png");
+		img = null;
+		
+		try {
+			img = ImageIO.read(is);
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		vellum = img;
+		
+		is = getClass().getResourceAsStream("/manuscriptOpen.png");
+		img = null;
+		
+		try {
+			img = ImageIO.read(is);
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		manuscriptOpenImg = img;
+		
+		is = getClass().getResourceAsStream("/grimoireOpen.png");
+		img = null;
+		
+		try {
+			img = ImageIO.read(is);
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		grimoireOpenImg = img;
+		
+		is = getClass().getResourceAsStream("/ElementsManuscript.png");
+		img = null;
+		
+		try {
+			img = ImageIO.read(is);
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		manuscriptImg = img;
+		
+		is = getClass().getResourceAsStream("/RecipesGrimoire.png");
+		img = null;
+		
+		try {
+			img = ImageIO.read(is);
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		grimoireImg = img;
+	}
+	
+	public GamePanel()
+	{
+		System.out.println(gScale);
+		mouseInput = new MouseInput(this);
+		addKeyListener(new KeyboardInput(this));
+		
+		addMouseListener(mouseInput);
+		addMouseMotionListener(mouseInput);
+		this.setBackground(new Color(0,0,0,255));
+		
+		loadImages();
+		
 		zero = (int)((x/2)-(UpperUI.getWidth()*gScale/2));
 		gZero = zero + (int)(544*gScale);
 		
@@ -280,10 +381,7 @@ public class GamePanel extends JPanel {
 		
 		for(int i = 1; i<Element.primary.length; i++)
 		{
-			for(int j = 0; j<12; j++)
-			{
-				addToStock(i);
-			}
+			addToStock(i,99);
 			
 			/*if(i%5==0)
 			{
@@ -305,6 +403,7 @@ public class GamePanel extends JPanel {
 		new Research();
 		
 		store = new Store();
+		recipe = new WoodSword();
 		
 		manuscript = new ElementsManuscript();
 		grimoire = new RecipesGrimoire();
@@ -315,18 +414,18 @@ public class GamePanel extends JPanel {
 		
 		int[] size = Research.getSizeOfGrid(gridId, hRadius);
 		
-		hexGrid = new Grid(gridId, (int)((gScale*583) + (938*gScale/2) - (size[0]/2)) + (int)(hRadius*(1+Math.ceil(Research.getList().get(gridId).getGrid()[0].length/2.0))/2), (int)((gScale*71) + (938*gScale/2) - (size[1]/2)) + (int)(Math.cos(Math.toRadians(30.0))*hRadius), hRadius, this);
+		hexGrid = new Grid(gridId, (int)(zero + (gScale*583) + (938*gScale/2) - (size[0]/2)) + (int)(hRadius*(1+Math.ceil(Research.getList().get(gridId).getGrid()[0].length/2.0))/2), (int)((gScale*71) + (938*gScale/2) - (size[1]/2)) + (int)(Math.cos(Math.toRadians(30.0))*hRadius), hRadius, this);
 		GridElement.checkNeighborsOfGridElements();
 	}
 	
 	public static int getGzero()
 	{
-		return getZero() + (int)(544*gScale);
+		return zero + (int)(544*gScale);
 	}
 	
 	public static int getZero()
 	{
-		return (int)((x/2)-(1920*gScale/2));
+		return zero;
 	}
 	
 	public void createNewGrid(int gridId)
@@ -367,7 +466,7 @@ public class GamePanel extends JPanel {
 	
 	public void updateGame() {
 		
-		if(Window==0 && !paused)
+		if(Window==0)
 		{
 			grabbedToMouse();
 			
@@ -452,30 +551,20 @@ public class GamePanel extends JPanel {
 			}
 			if(my>=928*gScale && my<=1008*gScale)
 			{
-				if(comb[0] != null && mx>=112*gScale && mx<=192*gScale)
+				if(comb[0] != null && mx>=zero+112*gScale && mx<=zero+192*gScale)
 				{
 					grabbed = new GrabElement(this, comb[0].getID(), mx-Element.w/2, my-Element.h/2);
 					FixedElement.getFList().remove(comb[0]);
 					comb[0] = null;
 					canComb = comb[0] != null && comb[1] != null && Combination.getResult(comb[0].getID(), comb[1].getID()) > 0;
 				}
-				else if(comb[1] != null && mx>=352*gScale && mx<=432*gScale)
+				else if(comb[1] != null && mx>=zero+352*gScale && mx<=zero+432*gScale)
 			{
 					grabbed = new GrabElement(this, comb[1].getID(), mx-Element.w/2, my-Element.h/2);
 					FixedElement.getFList().remove(comb[1]);
 					comb[1] = null;
 					canComb = comb[0] != null && comb[1] != null && Combination.getResult(comb[0].getID(), comb[1].getID()) > 0;
 				}
-			}
-			else if(Window == 0 && mx>x-64*gScale && my<64*gScale)
-			{
-				if(grabbed!=null)
-				{
-					addToStock(grabbed.getID());
-					grabbed.release();
-					grabbed = null;
-				}
-				openBook();
 			}
 		}
 		else
@@ -496,33 +585,33 @@ public class GamePanel extends JPanel {
 			}
 			else if(my>=928*gScale && my<=1008*gScale)
 			{
-				if(comb[0] == null && mx>=112*gScale && mx<=192*gScale)
+				if(comb[0] == null && mx>=zero+112*gScale && mx<=zero+192*gScale)
 				{
-					comb[0] = new FixedElement(grabbed.getID(), (int)Math.ceil(120*gScale), (int)Math.ceil(936*gScale));
+					comb[0] = new FixedElement(grabbed.getID(), zero+(int)Math.ceil(120*gScale), (int)Math.ceil(936*gScale));
 					grabbed.release();
 					grabbed = null;
 					canComb = comb[0] != null && comb[1] != null && Combination.getResult(comb[0].getID(), comb[1].getID()) > 0;
 				} 
-				else if(comb[1] == null && mx>=352*gScale && mx<=432*gScale)
+				else if(comb[1] == null && mx>=zero+352*gScale && mx<=zero+432*gScale)
 				{
-					comb[1] = new FixedElement(grabbed.getID(), (int)Math.ceil(360*gScale), (int)Math.ceil(936*gScale));
+					comb[1] = new FixedElement(grabbed.getID(), zero+(int)Math.ceil(360*gScale), (int)Math.ceil(936*gScale));
 					grabbed.release();
 					grabbed = null;
 					canComb = comb[0] != null && comb[1] != null && Combination.getResult(comb[0].getID(), comb[1].getID()) > 0;
 				}
-				else if(comb[0] != null && mx>=112*gScale && mx<=192*gScale)
+				else if(comb[0] != null && mx>=zero+112*gScale && mx<=zero+192*gScale)
 				{
 					int t = comb[0].getID();
 					FixedElement.getFList().remove(comb[0]);
-					comb[0] = new FixedElement(grabbed.getID(), (int)Math.ceil(120*gScale), (int)Math.ceil(936*gScale));
+					comb[0] = new FixedElement(grabbed.getID(), zero+(int)Math.ceil(120*gScale), (int)Math.ceil(936*gScale));
 					grabbed = new GrabElement(this, t, mx-Element.w/2, my-Element.h/2);
 					canComb = comb[0] != null && comb[1] != null && Combination.getResult(comb[0].getID(), comb[1].getID()) > 0;
 				}
-				else if(comb[1] != null && mx>=352*gScale && mx<=432*gScale)
+				else if(comb[1] != null && mx>=zero+352*gScale && mx<=zero+432*gScale)
 				{
 					int t = comb[1].getID();
 					FixedElement.getFList().remove(comb[1]);
-					comb[1] = new FixedElement(grabbed.getID(), (int)Math.ceil(360*gScale), (int)Math.ceil(936*gScale));
+					comb[1] = new FixedElement(grabbed.getID(), zero+(int)Math.ceil(360*gScale), (int)Math.ceil(936*gScale));
 					grabbed = new GrabElement(this, t, mx-Element.w/2, my-Element.h/2);
 					canComb = comb[0] != null && comb[1] != null && Combination.getResult(comb[0].getID(), comb[1].getID()) > 0;
 				}
@@ -532,16 +621,6 @@ public class GamePanel extends JPanel {
 					grabbed.release();
 					grabbed = null;
 				}
-			}
-			else if(Window == 0 && mx>x-64*gScale && my<64*gScale)
-			{
-				if(grabbed!=null)
-				{
-					addToStock(grabbed.getID());
-					grabbed.release();
-					grabbed = null;
-				}
-				openBook();
 			}
 			else
 			{
@@ -606,12 +685,16 @@ public class GamePanel extends JPanel {
 		mx = e.getX();
 		my = e.getY();
 
-		if(my>=380*gScale && my<=700*gScale && mx>=1795*gScale)
+		if(my>=380*gScale && my<=700*gScale && mx>=zero+1795*gScale)
 		{
 			if(my<=444*gScale)
 			{
-				manuscript.setPos((int) (1560*gScale), (int) (71*gScale));
-				grimoire.setPos((int) (1560*gScale), (int) (432*gScale));
+				manuscript.setPos((int) (zero+1560*gScale), (int) (71*gScale));
+				grimoire.setPos((int) (zero+1560*gScale), (int) (432*gScale));
+				
+				manuscriptOpen = false;
+				grimoireOpen = false;
+				
 				Window = 0;
 			}
 			else if(my<=508*gScale)
@@ -637,40 +720,47 @@ public class GamePanel extends JPanel {
 		}
 		else if(my >= 48*gScale && my <= 96*gScale)
 		{
-			if(mx >= 144*gScale && mx <272*gScale)
+			if(mx >= zero+144*gScale && mx<zero+272*gScale)
 				InvMode = false;
-			else if(mx <= 400*gScale)
+			else if(mx <= zero+400*gScale)
 				InvMode = true;
 		}
 		
-		if(Window==0 && !paused)
+		if(Window==0)
 		{
 			if(!InvMode)
 				grabbedElementsLogic();
 			else
 				grabbedItemsLogic();
-			
-			if(mx>=grimoire.getPos()[0] && mx<=grimoire.getPos()[0]+grimoire.getWidth() && my>=grimoire.getPos()[1] && my<=grimoire.getPos()[1]+grimoire.getHeight())
+
+			if(grimoireOpen && mx>=grimoire.getPos()[0]-grimoire.getWidth()/2 && mx<=grimoire.getPos()[0]+(grimoire.getWidth()*3)/2 && my>=grimoire.getPos()[1] && my<=grimoire.getPos()[1]+grimoire.getHeight())
 			{
-				if(mx>=grimoire.getPos()[0]+448*gScale && my>=grimoire.getPos()[1]+448*gScale)
+				grimoire.grabbed(mx, my);
+			}
+			else if(manuscriptOpen && mx>=manuscript.getPos()[0]-manuscript.getWidth()/2 && mx<=manuscript.getPos()[0]+(manuscript.getWidth()*3)/2 && my>=manuscript.getPos()[1] && my<=manuscript.getPos()[1]+manuscript.getHeight())
+			{
+				manuscript.grabbed(mx, my);
+			}
+			else if(mx>=grimoire.getPos()[0] && mx<=grimoire.getPos()[0]+grimoire.getWidth() && my>=grimoire.getPos()[1] && my<=grimoire.getPos()[1]+grimoire.getHeight())
+			{
+				if(!grimoireOpen && mx>=grimoire.getPos()[0]+448*gScale && my>=grimoire.getPos()[1]+448*gScale)
 				{
-					grimoire.openBook();
+					openGrimoire();
 				}
 				else
 					grimoire.grabbed(mx, my);
 			}
 			else if(mx>=manuscript.getPos()[0] && mx<=manuscript.getPos()[0]+manuscript.getWidth() && my>=manuscript.getPos()[1] && my<=manuscript.getPos()[1]+manuscript.getHeight())
 			{
-				if(mx>=manuscript.getPos()[0]+448*gScale && my>=manuscript.getPos()[1]+448*gScale)
+				if(!manuscriptOpen && mx>=manuscript.getPos()[0]+448*gScale && my>=manuscript.getPos()[1]+448*gScale)
 				{
-					openBook();
-					//manuscript.openBook();
+					openManuscript();
 				}
 				else
 					manuscript.grabbed(mx, my);
 			}
 		}
-		else if(Window == 0) // PAUSED
+		/*else if(Window == 0) // PAUSED
 		{
 			if(mx>zero+x-64*gScale && my<zero+64*gScale)
 			{
@@ -681,10 +771,10 @@ public class GamePanel extends JPanel {
 					grabbed = null;
 				}
 				
-				bookOpen = false;
+				manuscriptOpen = false;
 				paused = false;
 			}
-		}
+		}*/
 		else if(Window==1)
 		{
 			if(my >= 14*gScale && my <= 93*gScale && mx >= zero+1104*gScale && mx <= zero+1296*gScale)
@@ -761,12 +851,12 @@ public class GamePanel extends JPanel {
 	}
 	
 	int Debug = 0;
-	float woodAlpha = 0;
-	float stoneAlpha = 0;
-	private IComponent cGrabbed = null;
-	boolean forestToggle = false;
 	int TreeProgress = 0;
 	int StoneProgress = 0;
+	float woodAlpha = 0;
+	float stoneAlpha = 0;
+	
+	boolean forestToggle = false;
 	
 	private Boolean MineBarCollides()
 	{	
@@ -806,14 +896,18 @@ public class GamePanel extends JPanel {
 		return false;
 	}
 	
-	private void openBook()
+	private void openManuscript()
 	{
-		bookOpen = true; // Cacau was here
-		paused = true;
-		
-		int x=GamePanel.x-1152, y = (GamePanel.y/2)-432;
+		manuscriptOpen = true;
 		
 		manuscript.openBook();
+	}
+	
+	private void openGrimoire()
+	{
+		grimoireOpen = true;
+		
+		grimoire.openBook();
 	}
 	
 	public void clicked(MouseEvent e)
@@ -821,7 +915,7 @@ public class GamePanel extends JPanel {
 		mx = e.getX();
 		my = e.getY();
 		
-		if(Window==0 && !paused)
+		if(Window==0)
 		{
 
 		}
@@ -849,6 +943,24 @@ public class GamePanel extends JPanel {
 		return new StockElement(id);
 	}
 	
+	public StockElement addToStock(int id, int amount)
+	{
+		for(StockElement st: StockElement.getStock())
+		{
+			if(id==st.getID())
+			{
+				st.increase(amount);
+				resetElementsOnStock();
+				return st;
+			}
+		}
+		
+		StockElement st = new StockElement(id);
+		st.increase(amount-1);
+		
+		return st;
+	}
+	
 	private static int hMargin = (int)(Element.w*5/4), vMargin = (int)(Element.h*3/4+Element.h);
 	
 	public static int[] getMargin()
@@ -865,11 +977,11 @@ public class GamePanel extends JPanel {
 		{
 			if(i%6==0)
 			{
-				list.get(i).setPos(hMargin,(int) ((i/6)*Element.h + vMargin));
+				list.get(i).setPos(zero+hMargin,(int) ((i/6)*Element.h + vMargin));
 			}
 			else
 			{
-				list.get(i).setPos((int) (i%6*Element.w + hMargin),(int)((i/6)*Element.h + vMargin));
+				list.get(i).setPos((int) (zero+i%6*Element.w + hMargin),(int)((i/6)*Element.h + vMargin));
 			}
 		}
 	}
@@ -881,9 +993,9 @@ public class GamePanel extends JPanel {
 		mx = e.getX();
 		my = e.getY();
 		
-		if(Window==0 && !paused)
+		if(Window==0)
 		{
-			if(my >= 704 && my<=768 && mx >= 160 && mx <= 288)
+			if(my >= 704 && my<=768 && mx >= zero+160 && mx <= zero+288)
 			{
 				if(comb[0] != null && comb[1] != null)
 				{
@@ -953,7 +1065,8 @@ public class GamePanel extends JPanel {
 	}
 	
 	private int Window = 0;
-	Recipe recipe = new WoodSword();
+	
+	AlphaComposite fullOpacity = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1);
 	
 	public void paintComponent(Graphics g)
 	{
@@ -966,8 +1079,9 @@ public class GamePanel extends JPanel {
 		{
 			g.drawImage(WoodBg, zero + (int)(544*gScale), (int)(32*gScale), (int)(WoodBg.getWidth()*gScale), (int)(WoodBg.getHeight()*gScale), null);
 			
-			g.setColor(new Color(218, 177, 113, 255));
-			g.fillRect((int)(gScale*583), (int)(gScale*71), (int)(gScale*938), (int)(gScale*938));
+			//g.setColor(new Color(218, 177, 113, 255));
+			//g.fillRect((int)(zero + gScale*583), (int)(gScale*71), (int)(gScale*938), (int)(gScale*938));
+			g.drawImage(vellum, (int)(zero + gScale*583), (int)(gScale*71), (int)(gScale*938), (int)(gScale*938), null);
 			
 			for(int i = 0; i<hexGrid.getHexGrid().length; i++)
 			{
@@ -1025,23 +1139,15 @@ public class GamePanel extends JPanel {
 					g.drawLine(c[0]+r.nextInt(min, max), c[1]+r.nextInt(min, max), c[2]+r.nextInt(min, max), c[3]+r.nextInt(min, max));
 				}
 			}
+
+			g.drawImage(manuscriptImg, manuscript.getPos()[0], manuscript.getPos()[1], manuscript.getWidth(), manuscript.getHeight(), null);
+			g.drawImage(grimoireImg, grimoire.getPos()[0], grimoire.getPos()[1], grimoire.getWidth(), grimoire.getHeight(), null);
 			
-			g.setColor(Color.blue);
-			g.fillRect(manuscript.getPos()[0], manuscript.getPos()[1], manuscript.getWidth(), manuscript.getHeight());
-			g.setColor(new Color(243,239,214,255));
-			g.fillRect((int)(manuscript.getPos()[0]+448*gScale), (int)(manuscript.getPos()[1]+448*gScale), (int)(128*gScale), (int)(128*gScale));
-			
-			g.setColor(Color.orange);
-			g.fillRect(grimoire.getPos()[0], grimoire.getPos()[1], grimoire.getWidth(), grimoire.getHeight());
-			g.setColor(new Color(243,239,214,255));
-			g.fillRect((int)(grimoire.getPos()[0]+448*gScale), (int)(grimoire.getPos()[1]+448*gScale), (int)(128*gScale), (int)(128*gScale));
-			
-			DrawUpperBg(g);
-			
-			if(bookOpen)
+			if(manuscriptOpen)
 			{
-				g.setColor(new Color(243,239,214,255));
-				g.fillRect((int)(x*0.4), (int)(y*0.05), (int)(x*0.6), (int)(y*0.85));
+				//g.setColor(new Color(243,239,214,255));
+				//g.fillRect(manuscript.getPos()[0]-manuscript.getWidth()/2, manuscript.getPos()[1], manuscript.getWidth()*2, manuscript.getHeight());
+				g.drawImage(manuscriptOpenImg ,manuscript.getPos()[0]-manuscript.getWidth()/2, manuscript.getPos()[1], manuscript.getWidth()*2, manuscript.getHeight(), null);
 				
 				for(ManuscriptElement element: ManuscriptElement.getBList())
 				{
@@ -1049,7 +1155,12 @@ public class GamePanel extends JPanel {
 				}
 			}
 			
-			g.drawImage(Icons[5], (int)(x-Icons[5].getWidth()*gScale), 0, (int)(Icons[5].getWidth()*gScale), (int)(Icons[5].getHeight()*gScale), null);
+			if(grimoireOpen)
+			{
+				g.drawImage(grimoireOpenImg ,grimoire.getPos()[0]-grimoire.getWidth()/2, grimoire.getPos()[1], grimoire.getWidth()*2, grimoire.getHeight(), null);
+			}
+			
+			DrawUpperBg(g);
 			
 			if(InvMode)
 				DrawItems(g);
@@ -1250,28 +1361,11 @@ public class GamePanel extends JPanel {
 			DrawFGElements(g);
 		}
 		
-		/*
-		g.setColor(Color.blue);
+		((Graphics2D) g).setComposite(fullOpacity);
 		
-		for(int i = 0; i<Inventory.getInv().length; i++)
-		{
-			for(int j = 0; j<Inventory.getInv()[0].length; j++)
-			{
-				if(Inventory.getInv()[i][j] != 0)
-				{
-					g.fillRect(j*64, i*64, 64, 64);
-				}
-			}
-		}
-		
-		g.fillOval(450,450,100,100);
-		
-		g.setColor(Color.white);
-		
-		int circles = 5;
-		
-		for(int i = 0; i<=circles; i++)
-			g.drawLine(500, 500, 500 + (int)(50*Math.cos(Math.toRadians(270 + i*360/circles))), 500 + (int)(50*Math.sin(Math.toRadians(270 + i*360/circles))));*/
+		g.setColor(Color.black);
+		g.fillRect(0, 0, zero, y);
+		g.fillRect(zero+x, 0, zero, y);
 	}
 	
 	int UpdatesWithEffect = 120;
@@ -1296,17 +1390,17 @@ public class GamePanel extends JPanel {
 	private void DrawStockElements(Graphics g)
 	{
 		g.setColor(new Color(129,76,47));
-		g.fillRect((int)(144*gScale), (int)(48*gScale), (int)(128*gScale), (int)(48*gScale));
+		g.fillRect(zero+(int)(144*gScale), (int)(48*gScale), (int)(128*gScale), (int)(48*gScale));
 		g.setColor(new Color(104,62,40));
-		g.fillRect((int)(272*gScale), (int)(48*gScale), (int)(128*gScale), (int)(48*gScale));
+		g.fillRect(zero+(int)(272*gScale), (int)(48*gScale), (int)(128*gScale), (int)(48*gScale));
 		
 		g.setColor(new Color(0,0,0));
-		g.drawRect((int)(144*gScale), (int)(48*gScale), (int)(128*gScale), (int)(48*gScale));
-		g.drawRect((int)(272*gScale), (int)(48*gScale), (int)(128*gScale), (int)(48*gScale));
+		g.drawRect(zero+(int)(144*gScale), (int)(48*gScale), (int)(128*gScale), (int)(48*gScale));
+		g.drawRect(zero+(int)(272*gScale), (int)(48*gScale), (int)(128*gScale), (int)(48*gScale));
 		
 		g.setColor(new Color(39,31,25,255));
-		g.fillOval((int)(112*gScale), (int)(928*gScale), (int)(80*gScale), (int)(80*gScale));
-		g.fillOval((int)(352*gScale), (int)(928*gScale), (int)(80*gScale), (int)(80*gScale));
+		g.fillOval(zero+(int)(112*gScale), (int)(928*gScale), (int)(80*gScale), (int)(80*gScale));
+		g.fillOval(zero+(int)(352*gScale), (int)(928*gScale), (int)(80*gScale), (int)(80*gScale));
 		
 		g.setColor(Color.white);
 		g.setFont(new Font("/SimpleLife.ttf", Font.BOLD, (int)(20*gScale)));
@@ -1335,13 +1429,13 @@ public class GamePanel extends JPanel {
 	private void DrawItems(Graphics g)
 	{
 		g.setColor(new Color(104,62,40));
-		g.fillRect((int)(144*gScale), (int)(48*gScale), (int)(128*gScale), (int)(48*gScale));
+		g.fillRect(zero+(int)(144*gScale), (int)(48*gScale), (int)(128*gScale), (int)(48*gScale));
 		g.setColor(new Color(129,76,47));
-		g.fillRect((int)(272*gScale), (int)(48*gScale), (int)(128*gScale), (int)(48*gScale));
+		g.fillRect(zero+(int)(272*gScale), (int)(48*gScale), (int)(128*gScale), (int)(48*gScale));
 			
 		g.setColor(new Color(0,0,0));
-		g.drawRect((int)(144*gScale), (int)(48*gScale), (int)(128*gScale), (int)(48*gScale));
-		g.drawRect((int)(272*gScale), (int)(48*gScale), (int)(128*gScale), (int)(48*gScale));
+		g.drawRect(zero+(int)(144*gScale), (int)(48*gScale), (int)(128*gScale), (int)(48*gScale));
+		g.drawRect(zero+(int)(272*gScale), (int)(48*gScale), (int)(128*gScale), (int)(48*gScale));
 		
 		g.setColor(Color.white);
 		g.setFont(new Font("/SimpleLife.ttf", Font.BOLD, (int)(20*gScale)));

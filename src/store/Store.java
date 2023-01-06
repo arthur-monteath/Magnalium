@@ -13,27 +13,28 @@ public class Store
 	public Store()
 	{
 		double gScale = GamePanel.gScale;
+		int zero = GamePanel.getZero();
 		
-		buttonsT1[0] = new Button((int)(784*gScale), (int)(524*gScale), 50);		
-		buttonsT1[1] = new Button((int)(1040*gScale), (int)(444*gScale), 250);
-		buttonsT1[2] = new Button((int)(1296*gScale), (int)(444*gScale), 1000);
-		buttonsT1[3] = new Button((int)(1552*gScale), (int)(524*gScale), 2500);
-		buttonsT1[4] = new Button((int)(1040*gScale), (int)(604*gScale), 250);
-		buttonsT1[5] = new Button((int)(1296*gScale), (int)(604*gScale), 1000);
+		buttonsT1[0] = new Button(zero + (int)(784*gScale), (int)(524*gScale), 50);		
+		buttonsT1[1] = new Button(zero + (int)(1040*gScale), (int)(444*gScale), 250);
+		buttonsT1[2] = new Button(zero + (int)(1296*gScale), (int)(444*gScale), 1000);
+		buttonsT1[3] = new Button(zero + (int)(1552*gScale), (int)(524*gScale), 2500);
+		buttonsT1[4] = new Button(zero + (int)(1040*gScale), (int)(604*gScale), 250);
+		buttonsT1[5] = new Button(zero + (int)(1296*gScale), (int)(604*gScale), 1000);
 		
-		buttonsT2[0] = new Button((int)(784*gScale), (int)(524*gScale), 50);
-		buttonsT2[1] = new Button((int)(1040*gScale), (int)(444*gScale), 250);
-		buttonsT2[2] = new Button((int)(1296*gScale), (int)(444*gScale), 1000);
-		buttonsT2[3] = new Button((int)(1552*gScale), (int)(524*gScale), 2500);
-		buttonsT2[4] = new Button((int)(1040*gScale), (int)(604*gScale), 250);
-		buttonsT2[5] = new Button((int)(1296*gScale), (int)(604*gScale), 1000);
+		buttonsT2[0] = new Button(zero + (int)(784*gScale), (int)(524*gScale), 50);
+		buttonsT2[1] = new Button(zero + (int)(1040*gScale), (int)(444*gScale), 250);
+		buttonsT2[2] = new Button(zero + (int)(1296*gScale), (int)(444*gScale), 1000);
+		buttonsT2[3] = new Button(zero + (int)(1552*gScale), (int)(524*gScale), 2500);
+		buttonsT2[4] = new Button(zero + (int)(1040*gScale), (int)(604*gScale), 250);
+		buttonsT2[5] = new Button(zero + (int)(1296*gScale), (int)(604*gScale), 1000);
 		
-		buttonsT3[0] = new Button((int)(784*gScale), (int)(524*gScale), 50);
-		buttonsT3[1] = new Button((int)(1040*gScale), (int)(444*gScale), 250);
-		buttonsT3[2] = new Button((int)(1296*gScale), (int)(444*gScale), 1000);
-		buttonsT3[3] = new Button((int)(1552*gScale), (int)(524*gScale), 2500);
-		buttonsT3[4] = new Button((int)(1040*gScale), (int)(604*gScale), 250);
-		buttonsT3[5] = new Button((int)(1296*gScale), (int)(604*gScale), 1000);
+		buttonsT3[0] = new Button(zero + (int)(784*gScale), (int)(524*gScale), 50);
+		buttonsT3[1] = new Button(zero + (int)(1040*gScale), (int)(444*gScale), 250);
+		buttonsT3[2] = new Button(zero + (int)(1296*gScale), (int)(444*gScale), 1000);
+		buttonsT3[3] = new Button(zero + (int)(1552*gScale), (int)(524*gScale), 2500);
+		buttonsT3[4] = new Button(zero + (int)(1040*gScale), (int)(604*gScale), 250);
+		buttonsT3[5] = new Button(zero + (int)(1296*gScale), (int)(604*gScale), 1000);
 		
 		buttonsT1[0].unlock();
 		buttonsT2[0].unlock();
