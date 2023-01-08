@@ -1,8 +1,8 @@
 package elements;
 
 import items.Item;
-import items.Research;
 import main.GamePanel;
+import research.Research;
 import utils.Hexagon;
 
 public class Grid {
@@ -17,9 +17,7 @@ public class Grid {
 		this.x = x;
 		this.y = y;
 		
-		Item item = Research.getList().get(gridId);
-		
-		int[][] init = item.getGrid();
+		int[][] init = Research.getGrid(gridId);
 		
 		hex = new Hexagon[init[0].length][init.length];
 		
@@ -43,7 +41,7 @@ public class Grid {
 				else if(init[i][j]>0)
 				{
 					GridElement e = null;
-					if(i == item.getEnergized()[0] && j == item.getEnergized()[1])
+					if(i == Research.getEnergized(gridId)[0] && j == Research.getEnergized(gridId)[1])
 					{
 						e = new GridElement(gp,init[i][j],j,i,true, true);
 					}

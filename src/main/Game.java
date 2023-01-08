@@ -31,22 +31,25 @@ public class Game implements Runnable {
 	
 	private void update()
 	{
-		Hexagon hex = gamePanel.getGrid().getClosestHex(gamePanel.getMousePos()[0], gamePanel.getMousePos()[1]);
+		Hexagon hex = gamePanel.getGrid() != null ? gamePanel.getGrid().getClosestHex(gamePanel.getMousePos()[0], gamePanel.getMousePos()[1]) : null;
 		
-		for(Hexagon[] h: gamePanel.getGrid().getHexGrid())
+		if(gamePanel.getGrid() != null)
 		{
-			for(Hexagon hx: h)
+			for(Hexagon[] h: gamePanel.getGrid().getHexGrid())
 			{
-				if(hx!=null && !hx.isElementHex())
+				for(Hexagon hx: h)
 				{
-					hx.colorToDefault();
+					if(hx!=null && !hx.isElementHex())
+					{
+						hx.colorToDefault();
+					}
 				}
 			}
-		}
-		
-		if(hex != null && !hex.isElementHex())
-		{
-			hex.colorToWhite();
+			
+			if(hex != null && !hex.isElementHex())
+			{
+				hex.colorToWhite();
+			}
 		}
 		
 		gamePanel.updateGame();

@@ -7,6 +7,8 @@ import main.GamePanel;
 
 public abstract class Recipe {
 	
+	
+	
 	int[] itemIds, elementIds;
 	
 	protected int gZero, radius;

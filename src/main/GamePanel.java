@@ -3,8 +3,8 @@ package main;
 import input.*;
 import items.*;
 import recipes.Recipe;
-import recipes.RecipesGrimoire;
 import recipes.WoodSword;
+import research.Research;
 import store.Button;
 import store.Currency;
 import store.Store;
@@ -26,19 +26,27 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+import books.ElementsManuscript;
+import books.ManuscriptElement;
+import books.RecipesGrimoire;
 import elements.Combination;
 import elements.Element;
-import elements.ElementsManuscript;
 import elements.FixedElement;
 import elements.GrabElement;
 import elements.Grid;
 import elements.GridElement;
-import elements.ManuscriptElement;
 import elements.StockElement;
 
 public class GamePanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
+	
+	private static GamePanel instance;
+	
+	public static GamePanel getInstance()
+	{
+		return instance;
+	}
 	
 	private MouseInput mouseInput;
 	public static int x=Toolkit.getDefaultToolkit().getScreenSize().width;
@@ -46,8 +54,12 @@ public class GamePanel extends JPanel {
 	
 	public final static double gScale = (double)Toolkit.getDefaultToolkit().getScreenSize().height/1080;
 	
-	private BufferedImage[] sprites = new BufferedImage[12];
-	private BufferedImage WoodBg, UpperUI, forest, cave, Wood, Stone, vellum, manuscriptImg, grimoireImg, manuscriptOpenImg, grimoireOpenImg;
+	private BufferedImage[] sprites = new BufferedImage[12], vellum = new BufferedImage[4], grimoireIcon = new BufferedImage[2];
+	private BufferedImage 
+	WoodBg, UpperUI, forest, cave, Wood, Stone, manuscriptImg, grimoireImg, manuscriptOpenImg, grimoireOpenImg,
+	grimoireSlot;
+	
+	private int vellumIndex = 0;
 	
 	private boolean grimoireOpen = false, manuscriptOpen = false, InvMode = false;
 	
@@ -63,6 +75,8 @@ public class GamePanel extends JPanel {
 	
 	private void loadImages()
 	{
+		instance = this;
+		
 		InputStream is = getClass().getResourceAsStream("/Button.png");
 		BufferedImage img = null;
 		
@@ -82,6 +96,47 @@ public class GamePanel extends JPanel {
 		
 		sprites[0] = img.getSubimage(0, 0, 128, 64);
 		sprites[1] = img.getSubimage(128, 0, 128, 64);
+		
+		for(int i = 0; i<grimoireIcon.length; i++)
+		{
+			is = getClass().getResourceAsStream("/researchItems/" + i + ".png");
+			img = null;
+			
+			try {
+				img = ImageIO.read(is);
+				
+			} catch (IOException e) {
+				
+				e.printStackTrace();
+			} finally {
+				try {
+					is.close();
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			grimoireIcon[i] = img;
+		}
+		
+		is = getClass().getResourceAsStream("/GrimoireItemSlot.png");
+		img = null;
+		
+		try {
+			img = ImageIO.read(is);
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		grimoireSlot = img;
 		
 		is = getClass().getResourceAsStream("/Icons.png");
 		img = null;
@@ -106,44 +161,6 @@ public class GamePanel extends JPanel {
 		Icons[3] = img.getSubimage(0, 64, 64, 64);
 		Icons[4] = img.getSubimage(64, 64, 64, 64);
 		Icons[5] = img.getSubimage(128, 64, 64, 64);
-		
-		is = getClass().getResourceAsStream("/Book.png");
-		img = null;
-		
-		try {
-			img = ImageIO.read(is);
-			
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		} finally {
-			try {
-				is.close();
-			} catch(IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		sprites[3] = img;
-		
-		is = getClass().getResourceAsStream("/battleScenePlaceHolder.png");
-		img = null;
-		
-		try {
-			img = ImageIO.read(is);
-			
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		} finally {
-			try {
-				is.close();
-			} catch(IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		sprites[11] = img;
 		
 		is = getClass().getResourceAsStream("/LowerUId.png");
 		img = null;
@@ -260,7 +277,7 @@ public class GamePanel extends JPanel {
 		
 		Stone = img;
 		
-		is = getClass().getResourceAsStream("/vellum.png");
+		is = getClass().getResourceAsStream("/Vellum0.png");
 		img = null;
 		
 		try {
@@ -277,7 +294,64 @@ public class GamePanel extends JPanel {
 			}
 		}
 		
-		vellum = img;
+		vellum[0] = img;
+		
+		is = getClass().getResourceAsStream("/Vellum1.png");
+		img = null;
+		
+		try {
+			img = ImageIO.read(is);
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		vellum[1] = img;
+		
+		is = getClass().getResourceAsStream("/Vellum2.png");
+		img = null;
+		
+		try {
+			img = ImageIO.read(is);
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		vellum[2] = img;
+		
+		is = getClass().getResourceAsStream("/Vellum3.png");
+		img = null;
+		
+		try {
+			img = ImageIO.read(is);
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		vellum[3] = img;
 		
 		is = getClass().getResourceAsStream("/manuscriptOpen.png");
 		img = null;
@@ -379,7 +453,7 @@ public class GamePanel extends JPanel {
 		x *= gScale;
 		y *= gScale;
 		
-		for(int i = 1; i<Element.primary.length; i++)
+		for(int i = 1; i<Element.names.length; i++)
 		{
 			addToStock(i,99);
 			
@@ -400,22 +474,14 @@ public class GamePanel extends JPanel {
 		//hexGrid = new Grid(init, 50, 50, 32);
 		//hexGrid = new Grid(ManaCrystal.grid, (int)(0.4*x), (int)(0.1*y), 40, this);.
 		
-		new Research();
-		
 		store = new Store();
 		recipe = new WoodSword();
 		
 		manuscript = new ElementsManuscript();
 		grimoire = new RecipesGrimoire();
 		
-		int gridId = 2;
-		
-		int hRadius = (int)((Toolkit.getDefaultToolkit().getScreenSize().getHeight()/27)*Element.scale);
-		
-		int[] size = Research.getSizeOfGrid(gridId, hRadius);
-		
-		hexGrid = new Grid(gridId, (int)(zero + (gScale*583) + (938*gScale/2) - (size[0]/2)) + (int)(hRadius*(1+Math.ceil(Research.getList().get(gridId).getGrid()[0].length/2.0))/2), (int)((gScale*71) + (938*gScale/2) - (size[1]/2)) + (int)(Math.cos(Math.toRadians(30.0))*hRadius), hRadius, this);
-		GridElement.checkNeighborsOfGridElements();
+		int[] a = {0,1,2,3};
+		Research.unlock(a);
 	}
 	
 	public static int getGzero()
@@ -435,8 +501,15 @@ public class GamePanel extends JPanel {
 		int[] size = Research.getSizeOfGrid(gridId, hRadius);
 		
 		GridElement.getGList().clear();
-		hexGrid = new Grid(gridId, (int)((gScale*583) + (938*gScale/2) - (size[0]/2)) + (int)(hRadius*(1+Math.ceil(Research.getList().get(gridId).getGrid()[0].length/2.0))/2), (int)((gScale*71) + (938*gScale/2) - (size[1]/2)) + (int)(Math.cos(Math.toRadians(30.0))*hRadius), hRadius, this);
+		hexGrid = new Grid(gridId, (int)(zero + (gScale*583) + (938*gScale/2) - (size[0]/2)) + (int)(hRadius*(1+Math.ceil(Research.getGrid(gridId)[0].length/2.0))/2), (int)((gScale*71) + (938*gScale/2) - (size[1]/2)) + (int)(Math.cos(Math.toRadians(30.0))*hRadius), hRadius, this);
 		GridElement.checkNeighborsOfGridElements();
+		
+		int temp = vellumIndex;
+		
+		while(vellumIndex == temp)
+		{
+			vellumIndex = r.nextInt(0,4);
+		}
 	}
 	
 	public void updateMousePosition(MouseEvent e)
@@ -533,7 +606,7 @@ public class GamePanel extends JPanel {
 	{
 		if(grabbed==null)
 		{
-			Hexagon h = hexGrid.getClosestHex(mx, my);
+			Hexagon h = hexGrid != null ? hexGrid.getClosestHex(mx, my) : null;
 			if(Window == 0 && h!=null&&!h.isElementHex()&&h.getElement()!=null)
 			{
 				GridElement.getGList().remove(h.getElement());
@@ -569,7 +642,7 @@ public class GamePanel extends JPanel {
 		}
 		else
 		{
-			Hexagon h = hexGrid.getClosestHex(mx, my);
+			Hexagon h = hexGrid != null ? hexGrid.getClosestHex(mx, my) : null;
 			if(Window == 0 && h!=null&&h.getElement()==null)
 			{
 				grabbed.lock(h);
@@ -733,13 +806,39 @@ public class GamePanel extends JPanel {
 			else
 				grabbedItemsLogic();
 
-			if(grimoireOpen && mx>=grimoire.getPos()[0]-grimoire.getWidth()/2 && mx<=grimoire.getPos()[0]+(grimoire.getWidth()*3)/2 && my>=grimoire.getPos()[1] && my<=grimoire.getPos()[1]+grimoire.getHeight())
+			if(grimoireOpen && mx>=grimoire.getPos()[0]-grimoire.getWidth() && mx<=grimoire.getPos()[0]+grimoire.getWidth() && my>=grimoire.getPos()[1] && my<=grimoire.getPos()[1]+grimoire.getHeight())
 			{
-				grimoire.grabbed(mx, my);
+				if(mx<=grimoire.getPos()[0]-grimoire.getWidth()+160*gScale && my>=grimoire.getPos()[1]+432*gScale)
+				{
+					grimoire.turnPage(-2);
+				}
+				else if(mx>=grimoire.getPos()[0]+416*gScale && my>=grimoire.getPos()[1]+432*gScale)
+				{
+					grimoire.turnPage(2);
+				}
+				else if(mx>=grimoire.getPos()[0]+192*gScale && mx<=grimoire.getPos()[0]+384*gScale && my>=grimoire.getPos()[1]+448*gScale && my<=grimoire.getPos()[1]+512*gScale)
+				{
+					grimoire.pressButton(1);
+				}
+				else if(mx>=grimoire.getPos()[0]+192*gScale-grimoire.getWidth() && mx<=grimoire.getPos()[0]+384*gScale-grimoire.getWidth() && my>=grimoire.getPos()[1]+448*gScale && my<=grimoire.getPos()[1]+512*gScale)
+				{
+					grimoire.pressButton(0);
+				}
+				else if(mx>=grimoire.getPos()[0]-32*gScale && mx<=grimoire.getPos()[0]+32*gScale)
+				{
+					grimoireOpen = false;
+				}
+				else
+					grimoire.grabbed(mx, my);
 			}
-			else if(manuscriptOpen && mx>=manuscript.getPos()[0]-manuscript.getWidth()/2 && mx<=manuscript.getPos()[0]+(manuscript.getWidth()*3)/2 && my>=manuscript.getPos()[1] && my<=manuscript.getPos()[1]+manuscript.getHeight())
+			else if(manuscriptOpen && mx>=manuscript.getPos()[0]-manuscript.getWidth() && mx<=manuscript.getPos()[0]+manuscript.getWidth() && my>=manuscript.getPos()[1] && my<=manuscript.getPos()[1]+manuscript.getHeight())
 			{
-				manuscript.grabbed(mx, my);
+				if(mx>=manuscript.getPos()[0]-32*gScale && mx<=manuscript.getPos()[0]+32*gScale)
+				{
+					manuscriptOpen = false;
+				}
+				else
+					manuscript.grabbed(mx, my);
 			}
 			else if(mx>=grimoire.getPos()[0] && mx<=grimoire.getPos()[0]+grimoire.getWidth() && my>=grimoire.getPos()[1] && my<=grimoire.getPos()[1]+grimoire.getHeight())
 			{
@@ -1081,25 +1180,28 @@ public class GamePanel extends JPanel {
 			
 			//g.setColor(new Color(218, 177, 113, 255));
 			//g.fillRect((int)(zero + gScale*583), (int)(gScale*71), (int)(gScale*938), (int)(gScale*938));
-			g.drawImage(vellum, (int)(zero + gScale*583), (int)(gScale*71), (int)(gScale*938), (int)(gScale*938), null);
+			g.drawImage(vellum[vellumIndex], (int)(zero + gScale*583), (int)(gScale*71), (int)(gScale*938), (int)(gScale*938), null);
 			
-			for(int i = 0; i<hexGrid.getHexGrid().length; i++)
+			if(hexGrid != null)
 			{
-				for(int j = 0; j<hexGrid.getHexGrid()[0].length; j++)
+				for(int i = 0; i<hexGrid.getHexGrid().length; i++)
 				{
-					if(hexGrid.getHex(i,j) != null)
+					for(int j = 0; j<hexGrid.getHexGrid()[0].length; j++)
 					{
-						g.setColor(hexGrid.getHex(i,j).getColor());
-						g.fillPolygon(
-								hexGrid.getHex(i,j).getPoints()[0],
-								hexGrid.getHex(i,j).getPoints()[1], 
-								hexGrid.getHex(i,j).getPoints()[0].length);
-						
-						g.setColor(Color.white);
-						g.drawPolygon(
-								hexGrid.getHex(i,j).getPoints()[0],
-								hexGrid.getHex(i,j).getPoints()[1], 
-								hexGrid.getHex(i,j).getPoints()[0].length);
+						if(hexGrid.getHex(i,j) != null)
+						{
+							g.setColor(hexGrid.getHex(i,j).getColor());
+							g.fillPolygon(
+									hexGrid.getHex(i,j).getPoints()[0],
+									hexGrid.getHex(i,j).getPoints()[1], 
+									hexGrid.getHex(i,j).getPoints()[0].length);
+							
+							g.setColor(Color.white);
+							g.drawPolygon(
+									hexGrid.getHex(i,j).getPoints()[0],
+									hexGrid.getHex(i,j).getPoints()[1], 
+									hexGrid.getHex(i,j).getPoints()[0].length);
+						}
 					}
 				}
 			}
@@ -1147,17 +1249,27 @@ public class GamePanel extends JPanel {
 			{
 				//g.setColor(new Color(243,239,214,255));
 				//g.fillRect(manuscript.getPos()[0]-manuscript.getWidth()/2, manuscript.getPos()[1], manuscript.getWidth()*2, manuscript.getHeight());
-				g.drawImage(manuscriptOpenImg ,manuscript.getPos()[0]-manuscript.getWidth()/2, manuscript.getPos()[1], manuscript.getWidth()*2, manuscript.getHeight(), null);
+				g.drawImage(manuscriptOpenImg ,manuscript.getPos()[0]-manuscript.getWidth(), manuscript.getPos()[1], manuscript.getWidth()*2, manuscript.getHeight(), null);
 				
 				for(ManuscriptElement element: ManuscriptElement.getBList())
 				{
-					g.drawImage(element.getImg(), element.getPos()[0], element.getPos()[1], Element.w, Element.h, null);
+					g.drawImage(element.getImg(), manuscript.getPos()[0]+element.getPos()[0], manuscript.getPos()[1]+element.getPos()[1], ManuscriptElement.w, ManuscriptElement.h, null);
 				}
 			}
 			
 			if(grimoireOpen)
 			{
-				g.drawImage(grimoireOpenImg ,grimoire.getPos()[0]-grimoire.getWidth()/2, grimoire.getPos()[1], grimoire.getWidth()*2, grimoire.getHeight(), null);
+				g.drawImage(grimoireOpenImg ,grimoire.getPos()[0]-grimoire.getWidth(), grimoire.getPos()[1], grimoire.getWidth()*2, grimoire.getHeight(), null);
+				
+				g.drawImage(grimoireSlot, grimoire.getPos()[0]+(int)(128*gScale), grimoire.getPos()[1]+(int)(43*gScale), (int)(320*gScale), (int)(320*gScale), null);
+				g.drawImage(grimoireSlot, grimoire.getPos()[0]+(int)(128*gScale)-grimoire.getWidth(), grimoire.getPos()[1]+(int)(43*gScale), (int)(320*gScale), (int)(320*gScale), null);
+			
+				g.drawImage(grimoireIcon[0+grimoire.getPage()], grimoire.getPos()[0]+(int)(128*gScale), grimoire.getPos()[1]+(int)(43*gScale), (int)(320*gScale), (int)(320*gScale), null);
+				g.drawImage(grimoireIcon[1+grimoire.getPage()], grimoire.getPos()[0]+(int)(128*gScale)-grimoire.getWidth(), grimoire.getPos()[1]+(int)(43*gScale), (int)(320*gScale), (int)(320*gScale), null);
+				
+				g.setColor(Color.white);
+				g.fillRect((int) (grimoire.getPos()[0]+192*gScale), (int) (grimoire.getPos()[1]+448*gScale), (int) (192*gScale), (int) (64*gScale));
+				g.fillRect((int) (grimoire.getPos()[0]+192*gScale-grimoire.getWidth()), (int) (grimoire.getPos()[1]+448*gScale), (int) (192*gScale), (int) (64*gScale));
 			}
 			
 			DrawUpperBg(g);
@@ -1210,16 +1322,6 @@ public class GamePanel extends JPanel {
 				DrawStockElements(g);
 
 			DrawFGElements(g);
-			
-			for(IComponent c: IComponent.getList())
-			{
-				g.drawImage(c.getImg(), c.getPos()[0], c.getPos()[1], (int)(c.getWidth()), (int)(c.getHeight()), null);
-			}
-			
-			IComponent c = IComponent.getGrabbed();
-			
-			if(c != null)
-				g.drawImage(c.getImg(), c.getPos()[0], c.getPos()[1], (int)(c.getWidth()), (int)(c.getHeight()), null);
 		}
 		else if(Window==2)
 		{

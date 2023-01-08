@@ -288,7 +288,7 @@ public class GridElement extends Element {
 		
 		if(abe)
 		{
-			gamePanel.createNewGrid(1);
+			//gamePanel.createNewGrid(1);
 		}
 	}
 	
