@@ -7,6 +7,11 @@ public class RecipesGrimoire extends Book {
 	
 	int page = 0;
 	
+	private String[] itemNames = 
+	{
+			"Wood Handle"
+	};
+	
 	public RecipesGrimoire()
 	{
 		super(1560,432);
@@ -31,6 +36,11 @@ public class RecipesGrimoire extends Book {
 		{
 			page = 0;
 		}
+	}
+	
+	public String getName(int b)
+	{
+		return itemNames[page+b];
 	}
 	
 	public void openBook()

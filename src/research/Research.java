@@ -6,6 +6,17 @@ public class Research {
 	
 	private static ArrayList<Integer> available = new ArrayList<Integer>();
 	
+	private static String[] researchNames =
+	{
+			"Wood Handle",
+			
+			"Wood Blade",
+			
+			"Wood Guard",
+			
+			"Zephyr's Core"
+	};
+	
 	private static final int[][] energizedSlots = 
 	{
 			{0,0},
@@ -67,6 +78,11 @@ public class Research {
 	public static int[] getEnergized(int id)
 	{
 		return energizedSlots[id];
+	}
+	
+	public static String getName(int id)
+	{
+		return researchNames[id];
 	}
 	
 	public static void unlock(int[] a)

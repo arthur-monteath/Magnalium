@@ -13,6 +13,7 @@ import utils.*;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
@@ -54,7 +55,7 @@ public class GamePanel extends JPanel {
 	
 	public final static double gScale = (double)Toolkit.getDefaultToolkit().getScreenSize().height/1080;
 	
-	private BufferedImage[] sprites = new BufferedImage[12], vellum = new BufferedImage[4], grimoireIcon = new BufferedImage[2];
+	private BufferedImage[] sprites = new BufferedImage[12], vellum = new BufferedImage[4], researchButton = new BufferedImage[4], grimoireIcon = new BufferedImage[2];
 	private BufferedImage 
 	WoodBg, UpperUI, forest, cave, Wood, Stone, manuscriptImg, grimoireImg, manuscriptOpenImg, grimoireOpenImg,
 	grimoireSlot;
@@ -117,6 +118,28 @@ public class GamePanel extends JPanel {
 			}
 			
 			grimoireIcon[i] = img;
+		}
+		
+		for(int i = 0; i<researchButton.length; i++)
+		{
+			is = getClass().getResourceAsStream("/ResearchButton" + i + ".png");
+			img = null;
+			
+			try {
+				img = ImageIO.read(is);
+				
+			} catch (IOException e) {
+				
+				e.printStackTrace();
+			} finally {
+				try {
+					is.close();
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			researchButton[i] = img;
 		}
 		
 		is = getClass().getResourceAsStream("/GrimoireItemSlot.png");
@@ -479,9 +502,6 @@ public class GamePanel extends JPanel {
 		
 		manuscript = new ElementsManuscript();
 		grimoire = new RecipesGrimoire();
-		
-		int[] a = {0,1,2,3};
-		Research.unlock(a);
 	}
 	
 	public static int getGzero()
@@ -1261,15 +1281,41 @@ public class GamePanel extends JPanel {
 			{
 				g.drawImage(grimoireOpenImg ,grimoire.getPos()[0]-grimoire.getWidth(), grimoire.getPos()[1], grimoire.getWidth()*2, grimoire.getHeight(), null);
 				
-				g.drawImage(grimoireSlot, grimoire.getPos()[0]+(int)(128*gScale), grimoire.getPos()[1]+(int)(43*gScale), (int)(320*gScale), (int)(320*gScale), null);
-				g.drawImage(grimoireSlot, grimoire.getPos()[0]+(int)(128*gScale)-grimoire.getWidth(), grimoire.getPos()[1]+(int)(43*gScale), (int)(320*gScale), (int)(320*gScale), null);
-			
-				g.drawImage(grimoireIcon[0+grimoire.getPage()], grimoire.getPos()[0]+(int)(128*gScale), grimoire.getPos()[1]+(int)(43*gScale), (int)(320*gScale), (int)(320*gScale), null);
-				g.drawImage(grimoireIcon[1+grimoire.getPage()], grimoire.getPos()[0]+(int)(128*gScale)-grimoire.getWidth(), grimoire.getPos()[1]+(int)(43*gScale), (int)(320*gScale), (int)(320*gScale), null);
-				
 				g.setColor(Color.white);
-				g.fillRect((int) (grimoire.getPos()[0]+192*gScale), (int) (grimoire.getPos()[1]+448*gScale), (int) (192*gScale), (int) (64*gScale));
-				g.fillRect((int) (grimoire.getPos()[0]+192*gScale-grimoire.getWidth()), (int) (grimoire.getPos()[1]+448*gScale), (int) (192*gScale), (int) (64*gScale));
+				
+				Font font = new Font("/SimpleLife.ttf", Font.BOLD, (int)(29*gScale));
+				FontMetrics metrics = g.getFontMetrics(font);
+				g.setFont(font);
+				
+				if(Research.getUnlocked().size() > grimoire.getPage())
+				{
+					g.drawImage(grimoireSlot, grimoire.getPos()[0]+(int)(128*gScale)-grimoire.getWidth(), grimoire.getPos()[1]+(int)(43*gScale), (int)(320*gScale), (int)(320*gScale), null);
+					
+					if(grimoireIcon.length > grimoire.getPage())
+						g.drawImage(grimoireIcon[grimoire.getPage()], grimoire.getPos()[0]+(int)(128*gScale)-grimoire.getWidth(), grimoire.getPos()[1]+(int)(43*gScale), (int)(320*gScale), (int)(320*gScale), null);
+
+				    int x = (int) (grimoire.getPos()[0]-grimoire.getWidth()+153*gScale + (270*gScale - metrics.stringWidth(Research.getName(grimoire.getPage()))) / 2);
+				    int y = (int) (grimoire.getPos()[1]+379*gScale + ((29 - metrics.getHeight()) / 2) + metrics.getAscent());
+				    
+				    g.drawString(Research.getName(grimoire.getPage()), x, y);
+					
+				    g.drawImage(researchButton[grimoire.getPage()%4], (int) (grimoire.getPos()[0]-grimoire.getWidth()+192*gScale), (int) (grimoire.getPos()[1]+448*gScale), (int) (192*gScale), (int) (64*gScale), null);
+				}
+				
+				if(Research.getUnlocked().size() > grimoire.getPage()+1)
+				{
+					g.drawImage(grimoireSlot, grimoire.getPos()[0]+(int)(128*gScale), grimoire.getPos()[1]+(int)(43*gScale), (int)(320*gScale), (int)(320*gScale), null);
+					
+					if(grimoireIcon.length > grimoire.getPage()+1)
+						g.drawImage(grimoireIcon[grimoire.getPage()+1], grimoire.getPos()[0]+(int)(128*gScale), grimoire.getPos()[1]+(int)(43*gScale), (int)(320*gScale), (int)(320*gScale), null);
+					
+					int x = (int) (grimoire.getPos()[0]+153*gScale + (270*gScale - metrics.stringWidth(Research.getName(grimoire.getPage()+1))) / 2);
+				    int y = (int) (grimoire.getPos()[1]+379*gScale + ((29*gScale - metrics.getHeight()) / 2) + metrics.getAscent());
+				    
+				    g.drawString(Research.getName(grimoire.getPage()+1), x, y);
+					
+					g.drawImage(researchButton[(grimoire.getPage()+1)%4], (int) (grimoire.getPos()[0]+192*gScale), (int) (grimoire.getPos()[1]+448*gScale), (int) (192*gScale), (int) (64*gScale), null);
+				}
 			}
 			
 			DrawUpperBg(g);

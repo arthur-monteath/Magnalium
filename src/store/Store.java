@@ -1,6 +1,7 @@
 package store;
 
 import main.GamePanel;
+import research.Research;
 
 public class Store 
 {
@@ -65,7 +66,8 @@ public class Store
 	{
 		switch(tab)
 		{
-		case 1:
+		case 1: // Axes
+			
 			if(buttonsT1[0].getBought())
 			{
 				buttonsT1[1].unlock();
@@ -85,7 +87,8 @@ public class Store
 					buttonsT1[5].unlock();
 				}
 			}
-		case 2:
+		case 2: // Pickaxes
+			
 			if(buttonsT2[0].getBought())
 			{
 				buttonsT2[1].unlock();
@@ -105,9 +108,13 @@ public class Store
 					buttonsT2[5].unlock();
 				}
 			}
-		case 3:
+		case 3: // Swords
+			
 			if(buttonsT3[0].getBought())
 			{
+				int[] unlock = {0,1,2};
+				Research.unlock(unlock);
+				
 				buttonsT3[1].unlock();
 				buttonsT3[4].unlock();
 				
