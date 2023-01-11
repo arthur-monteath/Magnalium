@@ -106,4 +106,17 @@ public class InvItem {
 		this.x = x;
 		this.y = y;
 	}
+
+	public static InvItem getItem(int id) {
+		
+		for(InvItem item: InvItem.GetList())
+		{
+			if(item.getId() == id)
+			{
+				return item;
+			}
+		}
+		
+		return null;
+	}
 }

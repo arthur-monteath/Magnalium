@@ -1,5 +1,7 @@
 package items;
 
+import java.awt.image.BufferedImage;
+
 import main.GamePanel;
 import utils.Utils;
 
@@ -8,6 +10,10 @@ public class GrabbedItem
 	private static GrabbedItem instance = null;
 	
 	private static InvItem item = null;
+	
+	private static int id;
+	
+	private BufferedImage img;
 	
 	private int x,y,w,h;
 	
@@ -48,6 +54,15 @@ public class GrabbedItem
 		
 		w = (int) (item.GetSize()[0]*64*GamePanel.gScale);
 		h = (int) (item.GetSize()[1]*64*GamePanel.gScale);
+		
+		id = item.getId();
+		
+		img = item.GetImg();
+	}
+	
+	public BufferedImage getImg()
+	{
+		return img;
 	}
 	
 	public InvItem getItem()
@@ -62,8 +77,12 @@ public class GrabbedItem
 	
 	public static void release()
 	{
-		Inventory.addItem(item.getId());
+		Inventory.addItem(id);
 		
 		instance = null;
+	}
+
+	public static int getId() {
+		return id;
 	}
 }

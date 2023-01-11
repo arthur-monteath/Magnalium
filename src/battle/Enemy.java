@@ -17,22 +17,75 @@ public class Enemy {
 	
 	private int id,x,y,w,h;
 	
-	private int health,damage;
+	private int health,maxHealth,damage;
 	
 	private Random rand;
 	
-	public Enemy(int id)
+	public Enemy(int region, String file, int maxHealth, int damage, int cooldownDuration)
 	{	
 		rand = new Random();
 		
-		this.id = id;
-		
-		setImage("./enemies/" + id + ".png");
+		this.id = region;
+
+		setImage(file);
 		
 		w = img.getWidth();
 		h = img.getHeight();
 		
-		health = rand.nextInt(50, 251);
+		health = maxHealth;
+		this.maxHealth = maxHealth;
+		
+		this.damage = damage;
+		
+		this.cooldownDuration = cooldownDuration;
+	}
+	
+	private int cooldownDuration;
+	private boolean attackCooldown = true;
+	private int storedTicks = -1200;
+	public void update()
+	{
+		if(attackCooldown)
+			storedTicks++;
+		
+		if(storedTicks >= cooldownDuration)
+		{
+			attackCooldown = false;
+			storedTicks = 0;
+		}
+		
+		Attack();
+	}
+	
+	public void Start()
+	{
+		attackCooldown = false;
+		storedTicks = 0;
+	}
+	
+	private void Attack()
+	{
+		if(!attackCooldown)
+		{
+			attackCooldown = true;
+			BattleHandler.getInstance().takeDamage(damage);
+		}
+		
+	}
+	
+	public int getMaxHealth()
+	{
+		return maxHealth;
+	}
+	
+	public int getHealth()
+	{
+		return health;
+	}
+	
+	public int getDamage()
+	{
+		return damage;
 	}
 	
 	public void takeDamage(int amount)
@@ -41,7 +94,9 @@ public class Enemy {
 		
 		if(health<=0)
 		{
-			// die()
+			health = 0;
+			
+			BattleHandler.getInstance().respawnEnemy();
 		}
 	}
 	
@@ -94,5 +149,11 @@ public class Enemy {
 	{
 		this.x = x;
 		this.y = y;
+	}
+	
+	public void setPos(double x, double y)
+	{
+		this.x = (int)x;
+		this.y = (int)y;
 	}
 }

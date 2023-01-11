@@ -4,9 +4,9 @@ public class Inventory {
 
 	private static int[][] inventory = new int[32][6];
 			
-	private static String[] items = 	    {"" ,"wood", "rock", "w_handle", "w_guard", "w_blade", "w_toolGuard", "w_axe"};
-	private static int[][] itemSizes =	  {{0,0}, {2,2}, {1,1} ,   {1,2}   ,   {2,1}  ,   {1,2}  ,     {1,1}    ,  {2,2} };
-	private static int[] itemAmounts =     {0   ,   0  ,   0   ,     0     ,     0    ,     0    ,       0      ,    0   };
+	private static String[] items = 	    {"" ,"wood", "rock", "w_handle", "w_guard", "w_blade", "w_toolGuard", "w_axehead", "w_pickaxehead", "r_sword", "r_axe", "r_pickaxe", "w_sword"};
+	private static int[][] itemSizes =	  {{0,0}, {2,2}, {1,1} ,   {1,2}   ,   {2,1}  ,   {1,2}  ,     {1,1}    ,    {1,1} 	 ,		{2,1}	  ,	  {1,2}	 ,	{1,2} ,	   {2,2}   ,   {1,2}  };
+	private static int[] itemAmounts =     {0   ,   0  ,   0   ,     0     ,     0    ,     0    ,       0      ,      0   	 ,		  0		  ,		0	 ,	  0	  ,		 0	   ,	 0	  };
 	
 	public static int[][] getInv()
 	{
@@ -23,15 +23,48 @@ public class Inventory {
 		return itemAmounts[id];
 	}
 	
-	public static boolean removeItem(int id)
+	public static InvItem removeItem(int id)
 	{
 		if(itemAmounts[id] > 0)
 		{
 			itemAmounts[id]--;
-			return true;
+			
+			if(itemAmounts[id]<=0)
+			{
+				for(int i = 0; i<inventory.length; i++)
+				{
+					for(int j = 0; j<inventory[0].length; j++)
+					{
+						if(inventory[i][j] == id)
+						{
+							for(int r = 0; r<itemSizes[id][1]; r++)
+							{
+								for(int c = 0; c<itemSizes[id][0]; c++)
+								{
+									inventory[r+i][c+j] = 0;
+								}
+							}
+							
+							for(InvItem item: InvItem.GetList())
+							{
+								if(item.getId() == id)
+								{
+									InvItem it = InvItem.getItem(id);
+									
+									InvItem.GetList().remove(item);
+									
+									return it;
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			return InvItem.getItem(id);
 		}
 		
-		return false;
+		return null;
 	}
 	
 	public static void addItem(String name)

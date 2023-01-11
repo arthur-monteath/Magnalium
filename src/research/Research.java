@@ -14,7 +14,9 @@ public class Research {
 			
 			"Wood Guard",
 			
-			"Zephyr's Core"
+			"Zephyr's Core",
+			
+			"a"
 	};
 	
 	private static final int[][] energizedSlots = 
@@ -89,7 +91,8 @@ public class Research {
 	{
 		for(int i: a)
 		{
-			available.add(i);
+			if(!available.contains(i))
+				available.add(i);
 		}
 	}
 	
