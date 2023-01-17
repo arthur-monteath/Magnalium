@@ -17,6 +17,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -38,6 +39,7 @@ import elements.FixedElement;
 import elements.GrabElement;
 import elements.Grid;
 import elements.GridElement;
+import elements.LootElement;
 import elements.StockElement;
 
 public class GamePanel extends JPanel {
@@ -501,7 +503,11 @@ public class GamePanel extends JPanel {
 		
 		addMouseListener(mouseInput);
 		addMouseMotionListener(mouseInput);
-		this.setBackground(new Color(0,0,0,255));
+		setBackground(new Color(0,0,0,255));
+		
+		requestFocusInWindow();
+		setFocusable(true);
+		
 		
 		loadImages();
 		
@@ -516,23 +522,10 @@ public class GamePanel extends JPanel {
 		x *= gScale;
 		y *= gScale;
 		
-		for(int i = 1; i<Element.names.length; i++)
+		/*for(int i = 1; i<Element.names.length; i++)
 		{
 			addToStock(i,99);
-			
-			/*if(i%5==0)
-			{
-				e.setPos(320,(i/5)*64);
-				//e1.setPos(320,(i/5)*64);
-				//e2.setPos(320,(i/5)*64);
-			}
-			else
-			{
-				e.setPos(i%5*64,((i+4)/5)*64);
-				//e1.setPos(i%5*64,((i+4)/5)*64);
-				//e2.setPos(i%5*64,((i+4)/5)*64);
-			}*/
-		}
+		}*/
 		
 		//hexGrid = new Grid(init, 50, 50, 32);
 		//hexGrid = new Grid(ManaCrystal.grid, (int)(0.4*x), (int)(0.1*y), 40, this);.
@@ -579,6 +572,18 @@ public class GamePanel extends JPanel {
 	{
 		mx = e.getX();
 		my = e.getY();
+		
+		if(Window == 4)
+		{
+			for(LootElement element: LootElement.getLootElementList())
+			{
+				if(element.getPos()[0] <= mx && element.getPos()[0]+element.w >= mx && my >= element.getPos()[1] && my <= element.getPos()[1]+element.h)
+				{
+					addToStock(element.getID());
+					LootElement.getLootElementList().remove(element);
+				}
+			}
+		}
 	}
 	
 	private int mx=0, my=0;
@@ -652,6 +657,8 @@ public class GamePanel extends JPanel {
 				doorPos--;
 			
 			battleHandler.Update();
+			
+			LootElement.updateForces();
 			
 			grabbedToMouse();
 		}
@@ -1037,12 +1044,44 @@ public class GamePanel extends JPanel {
 			else
 				grabbedItemsLogic();
 			
-			if(!doorOpen && mx>=zero+1036*gScale && mx<=zero+1364*gScale && my>=476*gScale+doorPos && my<=604*gScale+doorPos)
+			if(!doorOpen && mx>=zero+1036*gScale && mx<=zero+1364*gScale && my>=476*gScale-doorPos && my<=604*gScale-doorPos)
 			{
 				startBattle();
 			}
 			
 			battleHandler.pressed();
+		}
+	}
+	
+	public void keyPressed(KeyEvent e)
+	{
+		if(e.getKeyCode()==KeyEvent.VK_W || e.getKeyCode()==KeyEvent.VK_UP)
+		{
+			battleHandler.upArrow(true);
+		}
+		else if(e.getKeyCode()==KeyEvent.VK_D || e.getKeyCode()==KeyEvent.VK_RIGHT)
+		{
+			battleHandler.rightArrow(true);
+		}
+		else if(e.getKeyCode()==KeyEvent.VK_S || e.getKeyCode()==KeyEvent.VK_DOWN)
+		{
+			battleHandler.downArrow(true);
+		}
+	}
+	
+	public void keyReleased(KeyEvent e)
+	{
+		if(e.getKeyCode()==KeyEvent.VK_W || e.getKeyCode()==KeyEvent.VK_UP)
+		{
+			battleHandler.upArrow(false);
+		}
+		else if(e.getKeyCode()==KeyEvent.VK_D || e.getKeyCode()==KeyEvent.VK_RIGHT)
+		{
+			battleHandler.rightArrow(false);
+		}
+		else if(e.getKeyCode()==KeyEvent.VK_S || e.getKeyCode()==KeyEvent.VK_DOWN)
+		{
+			battleHandler.downArrow(false);
 		}
 	}
 	
@@ -1609,6 +1648,11 @@ public class GamePanel extends JPanel {
 			
 			if(!doorOpen)
 				g.fillRect((int)(zero+1036*gScale), (int)(476*gScale), (int)(328*gScale), (int)(128*gScale));
+			
+			for(LootElement element: LootElement.getLootElementList())
+			{
+				g.drawImage(element.getImg(), element.getPos()[0], element.getPos()[1], LootElement.w, LootElement.h, null);
+			}
 			
 			DrawUpperBg(g);
 			
