@@ -575,12 +575,14 @@ public class GamePanel extends JPanel {
 		
 		if(Window == 4)
 		{
-			for(LootElement element: LootElement.getLootElementList())
+			ArrayList<LootElement> list = new ArrayList<LootElement>(LootElement.getLootElementList());
+			
+			for(LootElement element: list)
 			{
 				if(element.getPos()[0] <= mx && element.getPos()[0]+element.w >= mx && my >= element.getPos()[1] && my <= element.getPos()[1]+element.h)
 				{
-					addToStock(element.getID());
 					LootElement.getLootElementList().remove(element);
+					addToStock(element.getID());
 				}
 			}
 		}
@@ -1044,9 +1046,23 @@ public class GamePanel extends JPanel {
 			else
 				grabbedItemsLogic();
 			
-			if(!doorOpen && mx>=zero+1036*gScale && mx<=zero+1364*gScale && my>=476*gScale-doorPos && my<=604*gScale-doorPos)
+			if(doorPos<=0)
 			{
-				startBattle();
+				if(!LootElement.getLootElementList().isEmpty())
+				{
+					ArrayList<LootElement> list = new ArrayList<LootElement>(LootElement.getLootElementList());
+				
+					for(LootElement element: list)
+					{
+						LootElement.getLootElementList().remove(element);
+						addToStock(element.getID());
+					}
+				}
+			
+				if(mx>=zero+1036*gScale && mx<=zero+1364*gScale && my>=476*gScale-doorPos && my<=604*gScale-doorPos)
+				{
+					startBattle();
+				}
 			}
 			
 			battleHandler.pressed();
@@ -1634,6 +1650,11 @@ public class GamePanel extends JPanel {
 			
 			battleHandler.drawBattle(g);
 			
+			for(LootElement element: LootElement.getLootElementList())
+			{
+				g.drawImage(element.getImg(), element.getPos()[0], element.getPos()[1], LootElement.w, LootElement.h, null);
+			}
+			
 			g.drawImage(door, gZero, (int)(32*gScale)-doorPos, (int)(1312), (int)(508*gScale), null);
 			g.drawImage(mItemSlot, gZero+(int)(592*gScale), (int)(248*gScale-doorPos), (int)(128*gScale), (int)(128*gScale), null);
 			
@@ -1646,13 +1667,8 @@ public class GamePanel extends JPanel {
 			
 			g.setColor(Color.white);
 			
-			if(!doorOpen)
+			if(doorPos<=0)
 				g.fillRect((int)(zero+1036*gScale), (int)(476*gScale), (int)(328*gScale), (int)(128*gScale));
-			
-			for(LootElement element: LootElement.getLootElementList())
-			{
-				g.drawImage(element.getImg(), element.getPos()[0], element.getPos()[1], LootElement.w, LootElement.h, null);
-			}
 			
 			DrawUpperBg(g);
 			

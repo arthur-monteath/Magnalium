@@ -27,6 +27,8 @@ public class BattleHandler
 	
 	private boolean attackCooldown = true;
 	
+	private int enemiesKilled = 0;
+	
 	Random rand;
 	
 	public BattleHandler()
@@ -244,6 +246,7 @@ public class BattleHandler
 		}
 		
 		enemyEnterDelay = 1000;
+		enemiesKilled = 0;
 	}
 	
 	int oldEnemy;
@@ -268,7 +271,11 @@ public class BattleHandler
 			break;
 		}
 		
+		enemiesKilled++;
 		enemyEnterDelay = 1000;
+		
+		if(enemiesKilled >= 5)
+			GamePanel.getInstance().endBattle();
 	}
 	
 	private boolean up;

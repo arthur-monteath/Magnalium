@@ -17,9 +17,11 @@ public abstract class Element {
 	public static final String[] names = {"", 
 			"fire", "water", "earth", "air", "order", "chaos", 
 			"life","light","motion","energy","crystal","plant",
-			"ice","sano","metal","death","spirit","iter", 
-			"creature","brain","storm","slime","void","sorcery", 
-			"natura"
+			"ice","cure","balance","metal","death","spirit", 
+			"creature","brain","slime","void","sorcery","electricity",
+			"natura","poison","tree","necromancy","witchcraft","mind",
+			"human","wood","auram","undead","sense","tool",
+			"machine","alchemy","darkness","flight","violence","desire"
 	};
 	
 	private BufferedImage img;
