@@ -1,4 +1,4 @@
-package old;
+package com.magnalium.engine.ui;
 
 import com.magnalium.engine.input.*;
 import com.magnalium.game.battle.BattleHandler;

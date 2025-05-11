@@ -3,7 +3,7 @@ package com.magnalium.game.recipes;
 import java.awt.Color;
 import java.awt.Graphics;
 
-import old.GamePanel;
+import com.magnalium.engine.ui.GamePanel;
 
 public class WoodSword extends Recipe {
 

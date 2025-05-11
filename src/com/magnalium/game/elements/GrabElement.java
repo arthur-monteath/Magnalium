@@ -1,9 +1,8 @@
 package com.magnalium.game.elements;
 
+import com.magnalium.engine.ui.GamePanel;
 import com.magnalium.utils.Hexagon;
 import com.magnalium.utils.Utils;
-
-import old.GamePanel;
 
 public class GrabElement extends Element{
 	

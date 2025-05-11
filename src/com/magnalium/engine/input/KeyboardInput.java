@@ -3,7 +3,7 @@ package com.magnalium.engine.input;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import old.GamePanel;
+import com.magnalium.engine.ui.GamePanel;
 
 public class KeyboardInput implements KeyListener {
 

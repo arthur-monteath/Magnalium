@@ -2,9 +2,8 @@ package com.magnalium.game.items;
 
 import java.awt.image.BufferedImage;
 
+import com.magnalium.engine.ui.GamePanel;
 import com.magnalium.utils.Utils;
-
-import old.GamePanel;
 
 public class GrabbedItem 
 {

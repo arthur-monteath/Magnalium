@@ -3,9 +3,8 @@ package com.magnalium.game.elements;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import com.magnalium.engine.ui.GamePanel;
 import com.magnalium.utils.Hexagon;
-
-import old.GamePanel;
 
 public class FixedElement extends Element {
 	

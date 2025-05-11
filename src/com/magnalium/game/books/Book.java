@@ -2,7 +2,7 @@ package com.magnalium.game.books;
 
 import java.util.ArrayList;
 
-import old.GamePanel;
+import com.magnalium.engine.ui.GamePanel;
 
 public class Book 
 {

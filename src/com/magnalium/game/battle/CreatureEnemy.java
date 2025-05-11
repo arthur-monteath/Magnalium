@@ -1,6 +1,6 @@
 package com.magnalium.game.battle;
 
-import old.GamePanel;
+import com.magnalium.engine.ui.GamePanel;
 
 public class CreatureEnemy extends Enemy {
 

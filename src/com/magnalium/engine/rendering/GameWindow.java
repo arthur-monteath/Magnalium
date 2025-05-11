@@ -4,7 +4,7 @@ import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 
-import old.GamePanel;
+import com.magnalium.engine.ui.GamePanel;
 
 public class GameWindow {
 	

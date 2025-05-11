@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
-import old.GamePanel;
+import com.magnalium.engine.ui.GamePanel;
 
 public class InvItem {
 	

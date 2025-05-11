@@ -1,8 +1,7 @@
 package com.magnalium.game.store;
 
+import com.magnalium.engine.ui.GamePanel;
 import com.magnalium.game.research.Research;
-
-import old.GamePanel;
 
 public class Store 
 {

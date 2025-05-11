@@ -2,9 +2,8 @@ package com.magnalium.game.elements;
 
 import java.util.ArrayList;
 
+import com.magnalium.engine.ui.GamePanel;
 import com.magnalium.utils.Hexagon;
-
-import old.GamePanel;
 
 public class GridElement extends Element {
 

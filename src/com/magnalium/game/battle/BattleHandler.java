@@ -9,9 +9,8 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
+import com.magnalium.engine.ui.GamePanel;
 import com.magnalium.utils.Utils;
-
-import old.GamePanel;
 
 public class BattleHandler 
 {

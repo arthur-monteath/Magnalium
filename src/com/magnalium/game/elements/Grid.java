@@ -1,7 +1,6 @@
 package com.magnalium.game.elements;
 
-import old.GamePanel;
-
+import com.magnalium.engine.ui.GamePanel;
 import com.magnalium.game.items.Item;
 import com.magnalium.game.research.Research;
 import com.magnalium.utils.Hexagon;

@@ -6,7 +6,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.util.ArrayList;
 
-import old.GamePanel;
+import com.magnalium.engine.ui.GamePanel;
 
 public class BoxCollider {
 

@@ -2,10 +2,9 @@ package com.magnalium.game.books;
 
 import java.util.ArrayList;
 
+import com.magnalium.engine.ui.GamePanel;
 import com.magnalium.game.elements.Combination;
 import com.magnalium.game.elements.StockElement;
-
-import old.GamePanel;
 
 public class ElementsManuscript extends Book {
 

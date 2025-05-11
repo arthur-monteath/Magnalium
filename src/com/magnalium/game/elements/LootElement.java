@@ -3,7 +3,7 @@ package com.magnalium.game.elements;
 import java.util.ArrayList;
 import java.util.Random;
 
-import old.GamePanel;
+import com.magnalium.engine.ui.GamePanel;
 
 public class LootElement extends Element {
 

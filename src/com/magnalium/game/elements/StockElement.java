@@ -2,7 +2,7 @@ package com.magnalium.game.elements;
 
 import java.util.ArrayList;
 
-import old.GamePanel;
+import com.magnalium.engine.ui.GamePanel;
 
 public class StockElement extends Element {
 
