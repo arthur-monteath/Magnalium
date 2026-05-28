@@ -45,13 +45,6 @@ public class Enemy {
 	private int storedTicks = -1200;
 	public void update()
 	{
-		if(stunnedTicks>0)
-		{
-			stunnedTicks--;
-			
-			return;
-		}
-		
 		if(attackCooldown)
 			storedTicks++;
 		
@@ -64,48 +57,20 @@ public class Enemy {
 		Attack();
 	}
 	
-	public float getAttackLoadTime()
-	{
-		if(storedTicks<=cooldownDuration-80)
-			return 0;
-		
-		return (storedTicks-cooldownDuration+80)/80f;
-	}
-	
 	public void Start()
 	{
-		attackCooldown = true;
+		attackCooldown = false;
 		storedTicks = 0;
 	}
 	
-	int direction = 1;
 	private void Attack()
 	{
 		if(!attackCooldown)
 		{
 			attackCooldown = true;
-			BattleHandler.getInstance().sufferAttack(damage, direction);
-			direction = rand.nextInt(0,3);
+			BattleHandler.getInstance().takeDamage(damage);
 		}
 		
-	}
-	
-	private int stunnedTicks = 0;
-	public void stun()
-	{
-		stunnedTicks = 400;
-		attackCooldown = true;
-		storedTicks = 0;
-	}
-	
-	public boolean getStunned()
-	{
-		return stunnedTicks>0;
-	}
-	
-	public int getDirection()
-	{
-		return direction;
 	}
 	
 	public int getMaxHealth()
@@ -130,8 +95,6 @@ public class Enemy {
 		if(health<=0)
 		{
 			health = 0;
-			
-			LootTable.spawnLoot(this, id);
 			
 			BattleHandler.getInstance().respawnEnemy();
 		}

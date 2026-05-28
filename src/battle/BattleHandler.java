@@ -10,7 +10,6 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 import main.GamePanel;
-import utils.Utils;
 
 public class BattleHandler 
 {
@@ -23,7 +22,6 @@ public class BattleHandler
 	
 	private BufferedImage[] regions = new BufferedImage[3], playerStates = new BufferedImage[3];
 	private BufferedImage playerIdle;
-	private int playerState = -1;
 	
 	private boolean attackCooldown = true;
 	
@@ -187,15 +185,7 @@ public class BattleHandler
 		g.setColor(Color.green);
 		g.fillRect((int)(gZero+64*gScale), (int)(96*gScale), (int)(500*gScale*health/100), (int)(64*gScale));
 		
-		if(playerState == -1)
-			g.drawImage(playerIdle, gZero+(int)(280*gScale), (int)(642*gScale), (int)(216*gScale), (int)(216*gScale), null);
-		else
-			g.drawImage(playerStates[playerState], gZero+(int)(280*gScale), (int)(642*gScale), (int)(216*gScale), (int)(216*gScale), null);
-		
-		g.setColor(Color.yellow);
-		if(blockedTicks<=40)
-			g.fillRect(gZero+(int)(280*gScale), (int)(642*gScale), 50, 50);
-			
+		g.drawImage(playerIdle, gZero+(int)(280*gScale), (int)(642*gScale), (int)(216*gScale), (int)(216*gScale), null);
 		
 		if(currentEnemy != null)
 		{
@@ -204,13 +194,7 @@ public class BattleHandler
 			g.setColor(Color.green);
 			g.fillRect((int)(zero+1792*gScale), (int)(96*gScale), -(int)(500*gScale*currentEnemy.getHealth()/currentEnemy.getMaxHealth()), (int)(64*gScale));
 
-			if(enemyEnterDelay>0)
-				g.drawImage(currentEnemy.GetImg(), (int) (currentEnemy.getPos()[0]/Utils.smoothStep(currentEnemy.getPos()[0], currentEnemy.getPos()[0]+1000, currentEnemy.getPos()[0]+1000-enemyEnterDelay)), currentEnemy.getPos()[1]-100+currentEnemy.getDirection()*100, (int)(currentEnemy.GetImg().getWidth()*gScale), (int)(currentEnemy.GetImg().getHeight()*gScale), null);
-			else
-				g.drawImage(currentEnemy.GetImg(), (int) (currentEnemy.getPos()[0]-currentEnemy.getAttackLoadTime()*100), currentEnemy.getPos()[1]-100+currentEnemy.getDirection()*100, (int)(currentEnemy.GetImg().getWidth()*gScale), (int)(currentEnemy.GetImg().getHeight()*gScale), null);
-			
-			if(currentEnemy.getStunned())
-				g.fillRect(currentEnemy.getPos()[0], currentEnemy.getPos()[1], 50, 50);
+			g.drawImage(currentEnemy.GetImg(), currentEnemy.getPos()[0]+enemyEnterDelay, currentEnemy.getPos()[1], (int)(currentEnemy.GetImg().getWidth()*gScale), (int)(currentEnemy.GetImg().getHeight()*gScale), null);
 		}
 	}
 	
@@ -271,91 +255,8 @@ public class BattleHandler
 		enemyEnterDelay = 1000;
 	}
 	
-	private boolean up;
-	public void upArrow(boolean pressed)
+	public void takeDamage(int amount)
 	{
-		if(enemyEnterDelay==-1)
-		{
-			if(!up && pressed)
-			{
-				blockedTicks = 0;
-				playerState = 0;
-				up = true;
-				return;
-			}
-			
-			up = pressed;
-			
-			if(playerState == 0)
-			{
-				if(right)
-					playerState = 1;
-				else if(down)
-					playerState = 2;
-			}
-		}
-	}
-	
-	private boolean right;
-	public void rightArrow(boolean pressed)
-	{
-		if(enemyEnterDelay==-1)
-		{
-			if(!right && pressed)
-			{
-				blockedTicks = 0;
-				playerState = 1;
-				right = true;
-				return;
-			}
-			
-			right = pressed;
-			
-			if(playerState == 1)
-			{
-				if(up)
-					playerState = 0;
-				else if(down)
-					playerState = 2;
-			}
-		}
-	}
-	
-	private boolean down;
-	public void downArrow(boolean pressed)
-	{
-		if(enemyEnterDelay==-1)
-		{
-			if(!down && pressed)
-			{
-				blockedTicks = 0;
-				playerState = 2;
-				down = true;
-				return;
-			}
-			
-			down = pressed;
-			
-			if(playerState == 2)
-			{
-				if(up)
-					playerState = 0;
-				else if(right)
-					playerState = 1;
-			}
-		}
-	}
-	
-	public void sufferAttack(int amount, int direction)
-	{
-		if(direction == playerState)
-		{
-			if(blockedTicks<=40)
-				currentEnemy.stun();
-				
-			return;
-		}
-		
 		health -= amount;
 		
 		if(health<=0)
@@ -370,7 +271,6 @@ public class BattleHandler
 	
 	int ticks = 0;
 	int storedTicks = 0;
-	int blockedTicks = 21;
 	public void Update()
 	{
 		ticks++;
@@ -378,7 +278,6 @@ public class BattleHandler
 		if(enemyEnterDelay>0)
 		{
 			enemyEnterDelay--;
-			playerState = -1;
 			return;
 		}
 		else if(enemyEnterDelay==0)
@@ -386,11 +285,6 @@ public class BattleHandler
 			currentEnemy.Start();
 			enemyEnterDelay = -1;
 		}
-		
-		if(up || right || down)
-			blockedTicks++;
-		else
-			playerState = -1;
 		
 		if(attackCooldown)
 			storedTicks++;

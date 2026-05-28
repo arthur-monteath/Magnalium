@@ -10,5 +10,4 @@ public class CreatureEnemy extends Enemy {
 		setPos(GamePanel.getGzero()+(int)(440*GamePanel.gScale),(int)(492*GamePanel.gScale));
 	}
 
-	
 }
